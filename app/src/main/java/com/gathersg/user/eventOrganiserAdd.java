@@ -1,10 +1,14 @@
 package com.gathersg.user;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +30,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class eventOrganiserAdd extends AppCompatActivity {
@@ -39,7 +46,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
     FirebaseAuth auth;
     private byte[] imageData;
     private Button eventPublishButton;
-    private TextView viewPublishedEvents;
+    private TextView viewPublishedEvents, eventPublishDate;
     private FirebaseFirestore db;
     eventHelper helper;
     accountHelper account;
@@ -64,6 +71,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
         eventPublishButton = findViewById(R.id.eventPublishButton);
         dateCard = findViewById(R.id.selectDateButton);
         locCard = findViewById(R.id.getLocationButton);
+        eventPublishDate = findViewById(R.id.eventPublishDate);
         viewPublishedEvents = findViewById(R.id.viewPublishedEvents);
         eventPublishButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,8 +109,9 @@ public class eventOrganiserAdd extends AppCompatActivity {
         String eventDescValue = eventDesc.getText().toString();
         String eventLocNameValue = eventLocName.getText().toString();
         String temp =eventMaxPax.getText().toString();
+        String eventDateValue = eventPublishDate.getText().toString();
 
-        if (eventNameValue.isEmpty() || eventDescValue.isEmpty() || eventLocNameValue.isEmpty()||temp.isEmpty()) {
+        if (eventNameValue.isEmpty() || eventDescValue.isEmpty() || eventLocNameValue.isEmpty()||temp.isEmpty()||eventDateValue.isEmpty()) {
             Toast.makeText(getApplicationContext(),"Fill in all data fields ",Toast.LENGTH_SHORT).show();
         }else{
             int eventMaxPaxValue = Integer.parseInt(eventMaxPax.getText().toString());
@@ -128,7 +137,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
                             eventData.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
                             eventData.put(helper.KEY_LAT, 0);
                             eventData.put(helper.KEY_LON, 0);
-                            eventData.put(helper.KEY_EVENTDATE, "");
+                            eventData.put(helper.KEY_EVENTDATE, eventDateValue);
                             eventData.put(helper.KEY_EVENTORG, eventOrg);
                             eventData.put(helper.KEY_EVENTSIGNUP, 0);
 
@@ -168,7 +177,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                                             myEvents.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
                                                             myEvents.put(helper.KEY_LAT, 0);
                                                             myEvents.put(helper.KEY_LON, 0);
-                                                            myEvents.put(helper.KEY_EVENTDATE, "");
+                                                            myEvents.put(helper.KEY_EVENTDATE, eventDateValue);
                                                             myEvents.put(helper.KEY_EVENTORG, eventOrg);
                                                             myEvents.put(helper.KEY_EVENTSIGNUP, 0);
 
@@ -203,7 +212,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                                         myEvents.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
                                                         myEvents.put(helper.KEY_LAT, 0);
                                                         myEvents.put(helper.KEY_LON, 0);
-                                                        myEvents.put(helper.KEY_EVENTDATE, "");
+                                                        myEvents.put(helper.KEY_EVENTDATE, eventDateValue);
                                                         myEvents.put(helper.KEY_EVENTORG, eventOrg);
                                                         myEvents.put(helper.KEY_EVENTSIGNUP, 0);
                                                         myEvents.put(helper.KEY_EVENTSTATUS, helper.KEY_EVENTUPCOMING);
@@ -253,7 +262,40 @@ public class eventOrganiserAdd extends AppCompatActivity {
 
     private void onSelectDateButtonClick () {
         // Implement the logic when the select date button is clicked
+        final Calendar currentDate = Calendar.getInstance();
+        int year = currentDate.get(Calendar.YEAR);
+        int month = currentDate.get(Calendar.MONTH);
+        int day = currentDate.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this, android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.set(Calendar.YEAR, year);
+                        selectedDate.set(Calendar.MONTH, month);
+                        selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                        if (selectedDate.after(currentDate)) {
+                            // Selected date is in the future
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                            String formattedDate = dateFormat.format(selectedDate.getTime());
+                            Toast.makeText(getApplicationContext(),"Selected Date: " + formattedDate,Toast.LENGTH_LONG).show();
+                            eventPublishDate.setText(formattedDate);
+
+                        } else {
+                            // Selected date is not in the future
+                            Toast.makeText(getApplicationContext(),"Please select a future date.",Toast.LENGTH_LONG).show();
+
+                        }
+                    }
+                },
+                year, month, day);
+        datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        datePickerDialog.show();
     }
+
 
     private void onGetLocationButtonClick () {
         // Implement the logic when the get location button is clicked

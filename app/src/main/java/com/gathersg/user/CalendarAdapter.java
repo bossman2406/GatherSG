@@ -1,5 +1,6 @@
 package com.gathersg.user;
 
+
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,5 +69,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>{
     public interface  OnItemListener
     {
         void onItemClick(int position, LocalDate date);
+
     }
 }

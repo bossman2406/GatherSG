@@ -11,15 +11,16 @@
     android:theme="@style/Theme.User"
 
     app:ignore="NamespaceTypo">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:fontFamily="@font/inter_variable"
+        android:fontFamily="@font/poppins_bold"
         android:text="GatherSG"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="34sp"
+        android:textSize="40sp"
         android:textStyle="bold"></TextView>
 
 

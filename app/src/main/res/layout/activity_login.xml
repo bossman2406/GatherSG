@@ -19,11 +19,12 @@
         android:layout_gravity="center"
 
         android:layout_marginTop="100dp"
+        android:fontFamily="@font/poppins_bold"
         android:text="Login"
         android:textAlignment="center"
         android:textColor="@color/orange"
         android:textFontWeight="400"
-        android:textSize="40sp"
+        android:textSize="50sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

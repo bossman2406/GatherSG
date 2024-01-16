@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class Login extends AppCompatActivity {
     private Button volunteers,organiser,register;
     private TextView loginText,registerText;
@@ -21,9 +24,23 @@ public class Login extends AppCompatActivity {
     private organiserLogin organiserLogin;
     private FragmentContainerView fragmentContainerView;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        FirebaseAuth auth = FirebaseAuth.getInstance();
+//        FirebaseUser currentUser = auth.getCurrentUser();
+//
+//
+//
+////        if(currentUser!=null){
+////            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+////            startActivity(intent);
+////            finish();
+////        }
+
         setContentView(R.layout.activity_login);
         volunteers = findViewById(R.id.volunteerButton);
         organiser =findViewById(R.id.organiserButton);

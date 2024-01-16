@@ -17,6 +17,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
 
+            android:fontFamily="@font/poppins_bold"
             android:text="Register"
             android:textAlignment="center"
             android:textColor="@color/orange"
@@ -26,17 +27,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:fontFamily="@font/poppins_bold"
             android:text="for Volunteers"
-            app:layout_constraintTop_toBottomOf="@id/logintext"
             android:textAlignment="center"
             android:textColor="@color/orange"
             android:textFontWeight="400"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@id/logintext" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/nameCard"

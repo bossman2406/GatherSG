@@ -14,15 +14,15 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="10dp"
+        android:fontFamily="@font/poppins_black"
         android:text="My Events"
         android:textColor="@color/orange"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
@@ -135,13 +135,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/calendarRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="80dp"
         android:layout_weight="1" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/myEventRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="580dp"
+        android:layout_height="wrap_content"
         android:layout_weight="5" />
 
 

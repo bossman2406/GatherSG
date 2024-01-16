@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         FirebaseUser currentUser = auth.getCurrentUser();
         String uid = currentUser.getUid();
 
+
+
         Log.d("Your_Tag",temp + uid);
         DocumentReference docRef = db.collection(temp).document(uid);
         super.onCreate(savedInstanceState);
@@ -86,6 +88,11 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         allEvents = new allEvents();
 
 
+//        Intent serviceIntent = new Intent(getApplicationContext(), eventStatusService.class);
+//        getApplicationContext().startService(serviceIntent);
+//        Intent service2Intent = new Intent(getApplicationContext(), dataLinking.class);
+//        getApplicationContext().startService(service2Intent);
+//        Log.d("service", "service started");
 
 
 
@@ -120,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     return true;
                 }else if(id==R.id.calenderEvents){
                     CalendarUtils.selectedDate = LocalDate.now();
+                    Log.d("DATE", CalendarUtils.formattedDate(CalendarUtils.selectedDate));
                     if(helper.accountType==helper.KEY_VOLUNTEER){
                         fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, weeklyCalendarVol)
                                 .setReorderingAllowed(true)

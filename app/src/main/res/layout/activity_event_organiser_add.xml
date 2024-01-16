@@ -117,6 +117,7 @@
                 app:strokeWidth="3dp">
 
                 <TextView
+                    android:id="@+id/eventPublishDate"
                     android:layout_width="250dp"
                     android:layout_height="50dp"
                     android:layout_marginLeft="10sp"

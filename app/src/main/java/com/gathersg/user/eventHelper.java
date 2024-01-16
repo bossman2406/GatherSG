@@ -32,6 +32,7 @@ public class eventHelper {
     public static final String KEY_EVENTSTATUS = "eventStatus";
     public static final String KEY_EVENTATTENED = "Attended";
     public static final String KEY_EVENTUPCOMING = "Upcoming";
+    public static final String KEY_EVENTCONCLUDED = "Concluded";
 
 
 
