@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".userProfile">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/profile_background">
+
+        <include
+            layout="@layout/item_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/userfragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="427dp" />
+
+<!--        <ScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content">-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
+
+
+<!--                <include layout = "@layout/item_email"/>-->
+<!--                <include layout = "@layout/item_number"/>-->
+<!--                <include layout = "@layout/item_bio"/>-->
+
+<!--            </LinearLayout>-->
+<!--        </ScrollView>-->
+
+    </LinearLayout>
+
+</FrameLayout>

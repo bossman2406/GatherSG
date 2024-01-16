@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "562158833372",
+    "project_id": "gathersg-2024",
+    "storage_bucket": "gathersg-2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562158833372:android:7bcfbb96ed5791f7e36e19",
+        "android_client_info": {
+          "package_name": "com.gathersg.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562158833372-3uqk7rqqvl1257se2v05hot7vuqf3mkl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqj-imSRmQ1GGBqhrWoZv6RTdJYiU82G8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "562158833372-3uqk7rqqvl1257se2v05hot7vuqf3mkl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

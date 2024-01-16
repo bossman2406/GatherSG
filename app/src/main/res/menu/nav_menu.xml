@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:theme ="@style/Theme.User">
+
+
+    <group
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <item
+            android:id="@+id/accountNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="Account Center" />
+        <item
+            android:id="@+id/viaNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="VIA Hours and Certificates" />
+    </group>
+    <group
+        android:id="@+id/menu_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <item
+            android:id="@+id/aboutNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="About" />
+        <item
+            android:id="@+id/logoutNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="Logout" />
+    </group>
+</menu>

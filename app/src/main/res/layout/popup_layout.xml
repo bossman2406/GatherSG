@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/gallery"
+        android:layout_width="110dp"
+        android:layout_height="80dp"
+        android:backgroundTint="@color/orange"
+        android:text="Choose from Gallery"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp"
+        app:cornerRadius= "20dp"/>
+
+    <Button
+        android:id="@+id/takePhoto"
+        android:layout_width="110dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="50dp"
+        android:backgroundTint="@color/orange"
+        android:text="Take photo"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/gallery"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:cornerRadius= "20dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

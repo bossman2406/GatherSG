@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <item
+            android:gravity = "center_vertical"
+            android:id="@+id/homepage"
+            android:icon="@drawable/home"
+            android:title="Home" />
+
+        <item
+            android:gravity = "center_vertical"
+            android:id="@+id/calenderEvents"
+            android:icon="@drawable/calendar"
+            android:title="Calendar" />
+
+        <item
+            android:gravity = "center_vertical"
+            android:id="@+id/myEvents"
+            android:icon="@drawable/scan"
+            android:title="My Events" />
+
+        <item
+            android:gravity = "center_vertical"
+            android:id="@+id/chatbot"
+            android:icon="@drawable/customer_support"
+            android:title="Chatbot" />
+
+        <item
+            android:gravity = "center_vertical"
+            android:id="@+id/createEvent"
+            android:icon="@drawable/more"
+            android:title="Create Event" />
+    </menu>
+
