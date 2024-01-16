@@ -1,9 +1,13 @@
 package com.gathersg.user;
 
+import static com.gathersg.user.CalendarUtils.daysInWeekArray;
+import static com.gathersg.user.CalendarUtils.monthYearFromDate;
+
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,6 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,13 +29,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class myEventsVol extends Fragment {
+
+public class weeklyCalendarVol extends Fragment  implements  CalendarAdapter.OnItemListener{
     private FirebaseFirestore db;
     FirebaseAuth auth;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView,calendarRecyclerView;
 
     myEventsVolAdapter myEventsVolAdapter;
     private List<eventHelper> eventHelpers;
@@ -39,18 +48,36 @@ public class myEventsVol extends Fragment {
     private ArrayList<String> nameList, descList, locNameList, dateList, orgList,statusList;
     private ArrayList<Double> latList, lonList;
     private ArrayList<Blob> imageList;
+    private TextView monthYearText;
+    private ListView eventListView;
+    private Button nextWeekAction,previousWeekAction;
 
-
-
-
-    public myEventsVol() {
+    public weeklyCalendarVol() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_events_vol, container, false);
+        View view =  inflater.inflate(R.layout.fragment_weekly_calendar, container, false);
+        calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView);
+        monthYearText = view.findViewById(R.id.monthYearTV);
+        nextWeekAction = view.findViewById(R.id.nextWeekAction);
+        previousWeekAction = view.findViewById(R.id.previousWeekAction);
+        nextWeekAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextWeekAction(v);
+            }
+        });
+        previousWeekAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                previousWeekAction(v);
+            }
+        });
+        setWeekView();
         recyclerView = view.findViewById(R.id.myEventRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -133,7 +160,44 @@ public class myEventsVol extends Fragment {
                 }// Notify adapter of data change
             }
         });
-
         return view;
+    }
+
+
+
+    private void initWidgets()
+    {
+
+    }
+
+    private void setWeekView()
+    {
+        monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
+        ArrayList<LocalDate> days = daysInWeekArray(CalendarUtils.selectedDate);
+
+        CalendarAdapter calendarAdapter = new CalendarAdapter(days, (CalendarAdapter.OnItemListener) getContext());
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
+        calendarRecyclerView.setLayoutManager(layoutManager);
+        calendarRecyclerView.setAdapter(calendarAdapter);
+    }
+
+
+    public void previousWeekAction(View view)
+    {
+        CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusWeeks(1);
+        setWeekView();
+    }
+
+    public void nextWeekAction(View view)
+    {
+        CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusWeeks(1);
+        setWeekView();
+    }
+
+    @Override
+    public void onItemClick(int position, LocalDate date)
+    {
+        CalendarUtils.selectedDate = date;
+        setWeekView();
     }
 }

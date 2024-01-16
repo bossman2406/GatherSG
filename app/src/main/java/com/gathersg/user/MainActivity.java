@@ -17,15 +17,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,10 +31,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
     private Button button, saveDetails, weeklyButton;
@@ -49,9 +41,9 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     private userProfile userProfile;
     private calendar calendar;
     private allEvents allEvents;
-    private myEventsVol myEventsVol;
-    private myEventsOrg myEventsOrg;
-    private weeklyCalendar weeklyCalendar;
+
+    private weeklyCalendarOrg weeklyCalendarOrg;
+    private weeklyCalendarVol weeklyCalendarVol;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
@@ -89,10 +81,11 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         userProfile = new userProfile();
         calendar = new calendar();
-        weeklyCalendar = new weeklyCalendar();
+        weeklyCalendarVol = new weeklyCalendarVol();
+        weeklyCalendarOrg = new weeklyCalendarOrg();
         allEvents = new allEvents();
-        myEventsVol = new myEventsVol();
-        myEventsOrg = new myEventsOrg();
+
+
 
 
 
@@ -127,24 +120,21 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     return true;
                 }else if(id==R.id.calenderEvents){
                     CalendarUtils.selectedDate = LocalDate.now();
-                    fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, calendar)
-                            .setReorderingAllowed(true)
-                            .addToBackStack(null)
-                            .commit();
-
-                    return true;
-                } else if (id == R.id.myEvents) {
                     if(helper.accountType==helper.KEY_VOLUNTEER){
-                        fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, myEventsVol)
+                        fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, weeklyCalendarVol)
                                 .setReorderingAllowed(true)
                                 .addToBackStack(null)
                                 .commit();
                     } else if (helper.accountType==helper.KEY_ORGANISERS) {
-                        fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, myEventsOrg)
+                        fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, weeklyCalendarOrg)
                                 .setReorderingAllowed(true)
                                 .addToBackStack(null)
                                 .commit();
                     }
+
+                    return true;
+                } else if (id == R.id.myEvents) {
+
 
 
                     return true;

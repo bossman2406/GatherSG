@@ -1,10 +1,14 @@
 package com.gathersg.user;
 
+import static com.gathersg.user.CalendarUtils.daysInWeekArray;
+import static com.gathersg.user.CalendarUtils.monthYearFromDate;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,14 +31,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class myEventsOrg extends Fragment {
 
+public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnItemListener {
 
+    private TextView monthYearText;
+    private RecyclerView calendarRecyclerView;
     private FirebaseFirestore db;
     FirebaseAuth auth;
     private RecyclerView recyclerView;
@@ -51,16 +59,19 @@ public class myEventsOrg extends Fragment {
 
 
 
-
-    public myEventsOrg() {
+    public weeklyCalendarOrg() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_events_org, container, false);
-        recyclerView = view.findViewById(R.id.myEventOrgRecyclerView);
+
+        View view  = inflater.inflate(R.layout.fragment_weekly_calendar, container, false);
+        calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView);
+        monthYearText = view.findViewById(R.id.monthYearTV);
+        recyclerView = view.findViewById(R.id.myEventRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         eventHelpers = new ArrayList<>();
@@ -171,5 +182,36 @@ public class myEventsOrg extends Fragment {
         });
 
         return view;
+    }
+    private void setWeekView()
+    {
+        monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
+        ArrayList<LocalDate> days = daysInWeekArray(CalendarUtils.selectedDate);
+
+        CalendarAdapter calendarAdapter = new CalendarAdapter(days, (CalendarAdapter.OnItemListener) getContext());
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
+        calendarRecyclerView.setLayoutManager(layoutManager);
+        calendarRecyclerView.setAdapter(calendarAdapter);
+
+    }
+
+
+    public void previousWeekAction(View view)
+    {
+        CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusWeeks(1);
+        setWeekView();
+    }
+
+    public void nextWeekAction(View view)
+    {
+        CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusWeeks(1);
+        setWeekView();
+    }
+
+    @Override
+    public void onItemClick(int position, LocalDate date)
+    {
+        CalendarUtils.selectedDate = date;
+        setWeekView();
     }
 }

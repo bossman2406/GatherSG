@@ -229,15 +229,15 @@ public class upcomingEventAdapter extends RecyclerView.Adapter<upcomingEventAdap
 
 
                                                                                                         DocumentReference volunteerRef = db.collection(helper.KEY_VOLUNTEER).document(uid);
+                                                                                                        CollectionReference volunteerEventsCollection = volunteerRef.collection(helper.KEY_MYEVENTS);
 
 
-                                                                                                        volunteerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
+                                                                                                        volunteerEventsCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                                                                             @Override
-                                                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                                                                 if (task.isSuccessful()) {
-                                                                                                                    DocumentSnapshot userSignupDocument = task.getResult();
-                                                                                                                    if (userSignupDocument.exists()) {
-                                                                                                                        CollectionReference volunteerEventsCollection = volunteerRef.collection(helper.KEY_MYEVENTS);
+
                                                                                                                         DocumentReference volunteerEventsDocument = volunteerEventsCollection.document(eventName);
 
                                                                                                                         Map<String, Object> myEvents = new HashMap<>();
@@ -248,50 +248,55 @@ public class upcomingEventAdapter extends RecyclerView.Adapter<upcomingEventAdap
                                                                                                                         myEvents.put(event.KEY_LON, lon);
                                                                                                                         myEvents.put(event.KEY_EVENTDATE, date);
                                                                                                                         myEvents.put(event.KEY_EVENTORG, organiser);
-                                                                                                                        myEvents.put(event.KEY_EVENTSTATUS,status);
-                                                                                                                        myEvents.put(event.KEY_EVENTIMAGE,image);
-                                                                                                                                volunteerEventsDocument.update(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                                                                    @Override
-                                                                                                                                    public void onSuccess(Void unused) {
-                                                                                                                                        volunteerSignUp.setVisibility(View.GONE);
-                                                                                                                                        Toast.makeText(context.getApplicationContext(), "Sign Up Successful.", Toast.LENGTH_SHORT).show();
-                                                                                                                                        Log.d("Firestore", "Volunteer signup added successfully");
+                                                                                                                        myEvents.put(event.KEY_EVENTSTATUS, status);
+                                                                                                                        myEvents.put(event.KEY_EVENTIMAGE, image);
+                                                                                                                        volunteerEventsDocument.set(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                                            @Override
+                                                                                                                            public void onSuccess(Void unused) {
+                                                                                                                                volunteerSignUp.setVisibility(View.GONE);
+                                                                                                                                Toast.makeText(context.getApplicationContext(), "Sign Up Successful.", Toast.LENGTH_SHORT).show();
+                                                                                                                                Log.d("Firestore", "Volunteer signup added successfully");
 
-                                                                                                                                    }
-                                                                                                                                }).addOnFailureListener(new OnFailureListener() {
-                                                                                                                                    @Override
-                                                                                                                                    public void onFailure(@NonNull Exception e) {
-                                                                                                                                        Log.d("Fire", "FailedS Sign Up");
-                                                                                                                                    }
-                                                                                                                                });
                                                                                                                             }
-
-
-                                                                                                                    } else {
-                                                                                                                        CollectionReference volunteerEventsCollection = volunteerRef.collection(helper.KEY_MYEVENTS);
-                                                                                                                        String temp = nameList.get(position);
-                                                                                                                        DocumentReference volunteerEventsDocument = volunteerEventsCollection.document(temp);
-                                                                                                                        Map<String, Object> myEvents = new HashMap<>();
-                                                                                                                        myEvents.put(temp, temp);
-                                                                                                                                volunteerEventsDocument.set(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                                                                    @Override
-                                                                                                                                    public void onSuccess(Void unused) {
-                                                                                                                                        volunteerSignUp.setVisibility(View.GONE);
-                                                                                                                                        Toast.makeText(context.getApplicationContext(), "Sign Up Successful.", Toast.LENGTH_SHORT).show();
-                                                                                                                                        Log.d("Firestore", "Volunteer signup added successfully");
-
-                                                                                                                                    }
-                                                                                                                                }).addOnFailureListener(new OnFailureListener() {
-                                                                                                                                    @Override
-                                                                                                                                    public void onFailure(@NonNull Exception e) {
-                                                                                                                                        Log.d("Fire", "FailedS Sign Up");
-                                                                                                                                    }
-                                                                                                                                });
+                                                                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                                                                            @Override
+                                                                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                                                                Log.d("Fire", "FailedS Sign Up");
                                                                                                                             }
+                                                                                                                        });
+//                                                                                                                    } else {
+//                                                                                                                        DocumentReference volunteerEventsDocument = volunteerEventsCollection.document(eventName);
+//
+//                                                                                                                        Map<String, Object> myEvents = new HashMap<>();
+//                                                                                                                        myEvents.put(event.KEY_EVENTNAME, eventName);
+//                                                                                                                        myEvents.put(event.KEY_EVENTDESC, eventDesc);
+//                                                                                                                        myEvents.put(event.KEY_EVENTLOCNAME, locName);
+//                                                                                                                        myEvents.put(event.KEY_LAT, lat);
+//                                                                                                                        myEvents.put(event.KEY_LON, lon);
+//                                                                                                                        myEvents.put(event.KEY_EVENTDATE, date);
+//                                                                                                                        myEvents.put(event.KEY_EVENTORG, organiser);
+//                                                                                                                        myEvents.put(event.KEY_EVENTSTATUS, status);
+//                                                                                                                        myEvents.put(event.KEY_EVENTIMAGE, image);
+//                                                                                                                        Log.d("FIRESSSSS", "BEFORE SET EVENT");
+//                                                                                                                        volunteerEventsDocument.update(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                                                                                                            @Override
+//                                                                                                                            public void onSuccess(Void unused) {
+//                                                                                                                                volunteerSignUp.setVisibility(View.GONE);
+//                                                                                                                                Toast.makeText(context.getApplicationContext(), "Sign Up Successful.", Toast.LENGTH_SHORT).show();
+//                                                                                                                                Log.d("Firestore", "Volunteer signup added successfully");
+//
+//                                                                                                                            }
+//                                                                                                                        }).addOnFailureListener(new OnFailureListener() {
+//                                                                                                                            @Override
+//                                                                                                                            public void onFailure(@NonNull Exception e) {
+//                                                                                                                                Log.d("Fire", "FailedS Sign Up");
+//                                                                                                                            }
+//                                                                                                                        });
 
 
 
-                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
 
                                                                                                                                                                                                                             });
 
