@@ -260,22 +260,12 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         if (intent != null) {
             data = intent.getStringExtra("intent"); // Replace "key" with the key you used in putExtra
-        } else{
-            data = "default";
-        }
-
-        switch (data){
-            case "viewPublishedEvents":
+            if(data == "viewPublishedEvents"){
                 bottomNav.setSelectedItemId(R.id.myEvents);
+            }
+        } else{
 
-                break;
-
-
-            case "default":
-                bottomNav.setSelectedItemId(R.id.homepage);
-
-                break;
-
+            bottomNav.setSelectedItemId(R.id.homepage);
         }
 
     }
