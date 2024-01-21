@@ -28,7 +28,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -38,19 +37,18 @@ import java.util.Map;
 
 public class eventOrganiserAdd extends AppCompatActivity {
 
+    FirebaseAuth auth;
+    eventHelper helper;
+    accountHelper account;
     private EditText eventName, eventDesc, eventLocName, eventMaxPax;
     private String eventDate;
     private MaterialCardView dateCard, locCard;
     private double eventLatitude, eventLongitude;
     private int eventMaxParticipants;
-    FirebaseAuth auth;
     private byte[] imageData;
     private Button eventPublishButton;
     private TextView viewPublishedEvents, eventPublishDate;
     private FirebaseFirestore db;
-    eventHelper helper;
-    accountHelper account;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,15 +106,15 @@ public class eventOrganiserAdd extends AppCompatActivity {
         String eventNameValue = eventName.getText().toString();
         String eventDescValue = eventDesc.getText().toString();
         String eventLocNameValue = eventLocName.getText().toString();
-        String temp =eventMaxPax.getText().toString();
+        String temp = eventMaxPax.getText().toString();
         String eventDateValue = eventPublishDate.getText().toString();
 
-        if (eventNameValue.isEmpty() || eventDescValue.isEmpty() || eventLocNameValue.isEmpty()||temp.isEmpty()||eventDateValue.isEmpty()) {
-            Toast.makeText(getApplicationContext(),"Fill in all data fields ",Toast.LENGTH_SHORT).show();
-        }else{
+        if (eventNameValue.isEmpty() || eventDescValue.isEmpty() || eventLocNameValue.isEmpty() || temp.isEmpty() || eventDateValue.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Fill in all data fields ", Toast.LENGTH_SHORT).show();
+        } else {
             int eventMaxPaxValue = Integer.parseInt(eventMaxPax.getText().toString());
             String uid = auth.getCurrentUser().getUid();
-            DocumentReference docRef = db.collection(account.KEY_ORGANISERS).document(uid);
+            DocumentReference docRef = db.collection(accountHelper.KEY_ORGANISERS).document(uid);
 
             // Retrieve the document
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -126,29 +124,29 @@ public class eventOrganiserAdd extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             // DocumentSnapshot contains the data of the document
-                            String eventOrg = document.getString(account.KEY_USERNAME);
+                            String eventOrg = document.getString(accountHelper.KEY_USERNAME);
                             Log.d("Firestore", "Document data: " + document.getData());
 
                             // Create a Map to hold your data
                             Map<String, Object> eventData = new HashMap<>();
-                            eventData.put(helper.KEY_EVENTNAME, eventNameValue);
-                            eventData.put(helper.KEY_EVENTDESC, eventDescValue);
-                            eventData.put(helper.KEY_EVENTLOCNAME, eventLocNameValue);
-                            eventData.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
-                            eventData.put(helper.KEY_LAT, 0);
-                            eventData.put(helper.KEY_LON, 0);
-                            eventData.put(helper.KEY_EVENTDATE, eventDateValue);
-                            eventData.put(helper.KEY_EVENTORG, eventOrg);
-                            eventData.put(helper.KEY_EVENTSIGNUP, 0);
+                            eventData.put(eventHelper.KEY_EVENTNAME, eventNameValue);
+                            eventData.put(eventHelper.KEY_EVENTDESC, eventDescValue);
+                            eventData.put(eventHelper.KEY_EVENTLOCNAME, eventLocNameValue);
+                            eventData.put(eventHelper.KEY_EVENTMAXPAX, eventMaxPaxValue);
+                            eventData.put(eventHelper.KEY_LAT, 0);
+                            eventData.put(eventHelper.KEY_LON, 0);
+                            eventData.put(eventHelper.KEY_EVENTDATE, eventDateValue);
+                            eventData.put(eventHelper.KEY_EVENTORG, eventOrg);
+                            eventData.put(eventHelper.KEY_EVENTSIGNUP, 0);
 
                             // Add the imageData if available
                             if (imageData != null) {
                                 Blob imageBlob = Blob.fromBytes(imageData);
-                                eventData.put(helper.KEY_EVENTIMAGE, imageBlob);
+                                eventData.put(eventHelper.KEY_EVENTIMAGE, imageBlob);
                             }
 
                             // Specify the collection reference where you want to store the data
-                            CollectionReference eventsCollection = db.collection(helper.KEY_EVENTS);
+                            CollectionReference eventsCollection = db.collection(eventHelper.KEY_EVENTS);
 
                             // Specify a document reference with the provided event name
                             DocumentReference eventDocument = eventsCollection.document(eventNameValue);
@@ -158,7 +156,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            DocumentReference volunteerRef = db.collection(account.KEY_ORGANISERS).document(uid);
+                                            DocumentReference volunteerRef = db.collection(accountHelper.KEY_ORGANISERS).document(uid);
 
 
                                             volunteerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -167,24 +165,27 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                                     if (task.isSuccessful()) {
                                                         DocumentSnapshot userSignupDocument = task.getResult();
                                                         if (userSignupDocument.exists()) {
-                                                            CollectionReference volunteerEventsCollection = volunteerRef.collection(account.KEY_MYEVENTS);
+                                                            CollectionReference volunteerEventsCollection = volunteerRef.collection(accountHelper.KEY_MYEVENTS);
                                                             DocumentReference volunteerEventsDocument = volunteerEventsCollection.document(eventNameValue);
 
                                                             Map<String, Object> myEvents = new HashMap<>();
-                                                            myEvents.put(helper.KEY_EVENTNAME, eventNameValue);
-                                                            myEvents.put(helper.KEY_EVENTDESC, eventDescValue);
-                                                            myEvents.put(helper.KEY_EVENTLOCNAME, eventLocNameValue);
-                                                            myEvents.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
-                                                            myEvents.put(helper.KEY_LAT, 0);
-                                                            myEvents.put(helper.KEY_LON, 0);
-                                                            myEvents.put(helper.KEY_EVENTDATE, eventDateValue);
-                                                            myEvents.put(helper.KEY_EVENTORG, eventOrg);
-                                                            myEvents.put(helper.KEY_EVENTSIGNUP, 0);
+                                                            myEvents.put(eventHelper.KEY_EVENTNAME, eventNameValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTDESC, eventDescValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTLOCNAME, eventLocNameValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTMAXPAX, eventMaxPaxValue);
+                                                            myEvents.put(eventHelper.KEY_LAT, 0);
+                                                            myEvents.put(eventHelper.KEY_LON, 0);
+                                                            myEvents.put(eventHelper.KEY_EVENTDATE, eventDateValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTORG, eventOrg);
+                                                            myEvents.put(eventHelper.KEY_EVENTSIGNUP, 0);
+                                                            myEvents.put(eventHelper.KEY_EVENTSTATUS, eventHelper.KEY_EVENTUPCOMING);
+                                                            myEvents.put(eventHelper.KEY_SIGNUPSTATUS,eventHelper.KEY_OPEN);
+
 
                                                             // Add the imageData if available
                                                             if (imageData != null) {
                                                                 Blob imageBlob = Blob.fromBytes(imageData);
-                                                                myEvents.put(helper.KEY_EVENTIMAGE, imageBlob);
+                                                                myEvents.put(eventHelper.KEY_EVENTIMAGE, imageBlob);
                                                             }
                                                             volunteerEventsDocument.set(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
@@ -200,24 +201,25 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                                                 }
                                                             });
                                                         } else {
-                                                            CollectionReference volunteerEventsCollection = volunteerRef.collection(account.KEY_MYEVENTS);
+                                                            CollectionReference volunteerEventsCollection = volunteerRef.collection(accountHelper.KEY_MYEVENTS);
                                                             DocumentReference volunteerEventsDocument = volunteerEventsCollection.document(eventNameValue);
                                                             Map<String, Object> myEvents = new HashMap<>();
-                                                            myEvents.put(helper.KEY_EVENTNAME, eventNameValue);
-                                                            myEvents.put(helper.KEY_EVENTDESC, eventDescValue);
-                                                            myEvents.put(helper.KEY_EVENTLOCNAME, eventLocNameValue);
-                                                            myEvents.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
-                                                            myEvents.put(helper.KEY_LAT, 0);
-                                                            myEvents.put(helper.KEY_LON, 0);
-                                                            myEvents.put(helper.KEY_EVENTDATE, eventDateValue);
-                                                            myEvents.put(helper.KEY_EVENTORG, eventOrg);
-                                                            myEvents.put(helper.KEY_EVENTSIGNUP, 0);
-                                                            myEvents.put(helper.KEY_EVENTSTATUS, helper.KEY_EVENTUPCOMING);
+                                                            myEvents.put(eventHelper.KEY_EVENTNAME, eventNameValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTDESC, eventDescValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTLOCNAME, eventLocNameValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTMAXPAX, eventMaxPaxValue);
+                                                            myEvents.put(eventHelper.KEY_LAT, 0);
+                                                            myEvents.put(eventHelper.KEY_LON, 0);
+                                                            myEvents.put(eventHelper.KEY_EVENTDATE, eventDateValue);
+                                                            myEvents.put(eventHelper.KEY_EVENTORG, eventOrg);
+                                                            myEvents.put(eventHelper.KEY_EVENTSIGNUP, 0);
+                                                            myEvents.put(eventHelper.KEY_EVENTSTATUS, eventHelper.KEY_EVENTUPCOMING);
+                                                            myEvents.put(eventHelper.KEY_SIGNUPSTATUS,eventHelper.KEY_OPEN);
 
                                                             // Add the imageData if available
                                                             if (imageData != null) {
                                                                 Blob imageBlob = Blob.fromBytes(imageData);
-                                                                myEvents.put(helper.KEY_EVENTIMAGE, imageBlob);
+                                                                myEvents.put(eventHelper.KEY_EVENTIMAGE, imageBlob);
                                                             }
                                                             volunteerEventsDocument.set(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
@@ -258,7 +260,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
     }
 
 
-    private void onSelectDateButtonClick () {
+    private void onSelectDateButtonClick() {
         // Implement the logic when the select date button is clicked
         final Calendar currentDate = Calendar.getInstance();
         int year = currentDate.get(Calendar.YEAR);
@@ -279,12 +281,12 @@ public class eventOrganiserAdd extends AppCompatActivity {
                             // Selected date is in the future
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                             String formattedDate = dateFormat.format(selectedDate.getTime());
-                            Toast.makeText(getApplicationContext(),"Selected Date: " + formattedDate,Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Selected Date: " + formattedDate, Toast.LENGTH_LONG).show();
                             eventPublishDate.setText(formattedDate);
 
                         } else {
                             // Selected date is not in the future
-                            Toast.makeText(getApplicationContext(),"Please select a future date.",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Please select a future date.", Toast.LENGTH_LONG).show();
 
                         }
                     }
@@ -295,14 +297,14 @@ public class eventOrganiserAdd extends AppCompatActivity {
     }
 
 
-    private void onGetLocationButtonClick () {
+    private void onGetLocationButtonClick() {
         // Implement the logic when the get location button is clicked
     }
 
-    private void onViewPublishedEventsClick () {
+    private void onViewPublishedEventsClick() {
         // Implement the logic when the view published events button is clicked
-        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-        intent.putExtra("intent","viewPublishedEvents");
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("intent", "viewPublishedEvents");
         startActivity(intent);
         finish();
 

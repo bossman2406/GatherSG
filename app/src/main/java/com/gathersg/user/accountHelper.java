@@ -2,8 +2,6 @@ package com.gathersg.user;
 
 public class accountHelper {
 
-    public static String accountType;
-    public static String accountUID;
     public static final String KEY_USERNAME = "username";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";
@@ -12,10 +10,11 @@ public class accountHelper {
     public static final String KEY_VOLUNTEER = "volunteer";
     public static final String KEY_ORGANISERS = "organisers";
     public static final String KEY_MYEVENTS = "myEvents";
+    public static String accountType;
+    public static String accountUID;
 
 
-
-    public accountHelper(){
+    public accountHelper() {
 
     }
 
@@ -25,7 +24,7 @@ public class accountHelper {
     }
 
     public void setAccountType(String accountType) {
-        this.accountType = accountType;
+        accountHelper.accountType = accountType;
     }
 
 }

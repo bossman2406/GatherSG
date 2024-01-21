@@ -1,11 +1,7 @@
 package com.gathersg.user;
 
-import android.app.Service;
-import android.content.Intent;
 import android.os.Handler;
-import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -26,8 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class eventStatusService {
-    private Handler handler;
-    private Runnable runnable;
     FirebaseFirestore db;
     FirebaseAuth auth;
     accountHelper account;
@@ -35,8 +29,10 @@ public class eventStatusService {
     String accountType;
     eventHelper event;
     dateCompare dateCompare;
+    private Handler handler;
+    private Runnable runnable;
 
-    private void checkData() {
+    protected void checkData() {
         // Implement your data checking logic here
         // This method will be called periodically in the background
         // For example, you can check for updates, synchronize data, etc.
@@ -45,30 +41,30 @@ public class eventStatusService {
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
         uid = currentUser.getUid();
-        accountType = account.accountType;
+        accountType = accountHelper.accountType;
 
-        CollectionReference events = db.collection(event.KEY_EVENTS);
+        CollectionReference events = db.collection(eventHelper.KEY_EVENTS);
         events.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    for (DocumentSnapshot document : task.getResult()){
-                        String date = document.getString(event.KEY_EVENTDATE);
-                        String name = document.getString(event.KEY_EVENTNAME);
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+                        String date = document.getString(eventHelper.KEY_EVENTDATE);
+                        String name = document.getString(eventHelper.KEY_EVENTNAME);
 
-                        if(date !=null) {
-                            Date inputDate = dateCompare.parseDateString(date);
-                            if(inputDate != null) {
+                        if (date != null) {
+                            Date inputDate = com.gathersg.user.dateCompare.parseDateString(date);
+                            if (inputDate != null) {
                                 Date currentDate = new Date();
                                 // Compare the two dates
                                 int comparisonResult = currentDate.compareTo(inputDate);
-                                DocumentReference eventStatus = db.collection(event.KEY_EVENTS).document(name);
+                                DocumentReference eventStatus = db.collection(eventHelper.KEY_EVENTS).document(name);
                                 Map<String, Object> myEvents = new HashMap<>();
                                 if (comparisonResult < 0) {
-                                    myEvents.put(event.KEY_EVENTDATE, event.KEY_EVENTUPCOMING);
+                                    myEvents.put(eventHelper.KEY_EVENTDATE, eventHelper.KEY_EVENTUPCOMING);
                                     Log.d("DATE", "Input date is in the future.");
                                 } else {
-                                    myEvents.put(event.KEY_EVENTDATE, event.KEY_EVENTCONCLUDED);
+                                    myEvents.put(eventHelper.KEY_EVENTDATE, eventHelper.KEY_EVENTCONCLUDED);
                                     Log.d("DATE", "Input date is in the past.");
                                 }
                                 eventStatus.set(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -78,7 +74,7 @@ public class eventStatusService {
 
                                     }
                                 });
-                            }else {
+                            } else {
                                 Log.e("DATE", "Failed to parse input date: " + date);
                             }
                         } else {

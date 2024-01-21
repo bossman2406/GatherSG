@@ -2,10 +2,6 @@ package com.gathersg.user;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,15 +30,13 @@ import java.util.Map;
 
 public class organiserRegister extends Fragment {
 
+    private static final String TAG = "user";
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public String uid;
     FirebaseAuth mAuth;
     EditText password, uen, name, email;
     Button register;
-    public String uid;
     accountHelper helper;
-
-    private static final String TAG = "user";
-
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public organiserRegister() {
     }
@@ -97,14 +94,14 @@ public class organiserRegister extends Fragment {
                                 // Now, 'uid' contains the unique identifier for the current user
                             }
 
-                            DocumentReference docRef = db.collection(helper.KEY_ORGANISERS).document(uid);
+                            DocumentReference docRef = db.collection(accountHelper.KEY_ORGANISERS).document(uid);
                             CollectionReference itemsCollection = docRef.collection("myEvents");
 
                             Map<String, Object> note = new HashMap<>();
-                            note.put(helper.KEY_USERNAME, name);
-                            note.put(helper.KEY_EMAIL, email);
-                            note.put(helper.KEY_UEN, uen);
-                            note.put(helper.KEY_PASSWORD, password);
+                            note.put(accountHelper.KEY_USERNAME, name);
+                            note.put(accountHelper.KEY_EMAIL, email);
+                            note.put(accountHelper.KEY_UEN, uen);
+                            note.put(accountHelper.KEY_PASSWORD, password);
 
                             docRef.set(note)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -112,7 +109,7 @@ public class organiserRegister extends Fragment {
                                         public void onSuccess(Void unused) {
                                             Toast.makeText(getContext(), "Done", Toast.LENGTH_LONG).show();
 
-                                            helper.accountType = helper.KEY_ORGANISERS;
+                                            accountHelper.accountType = accountHelper.KEY_ORGANISERS;
                                             Intent intent = new Intent(requireContext(), MainActivity.class);
                                             startActivity(intent);
                                         }

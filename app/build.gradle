@@ -61,6 +61,18 @@ dependencies {
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
+    implementation "androidx.camera:camera-core:1.1.0"
+    implementation "androidx.camera:camera-camera2:1.1.0"
+    implementation "androidx.camera:camera-lifecycle:1.1.0"
+    implementation "androidx.camera:camera-view:1.0.0-alpha33"
+
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+
+    implementation 'com.google.zxing:core:3.4.1'
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    implementation 'androidx.multidex:multidex:2.0.1 '
+
 
 
 

@@ -1,13 +1,7 @@
 package com.gathersg.user;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,15 +31,13 @@ import java.util.Map;
 
 public class volunteerRegister extends Fragment {
 
+    private static final String TAG = "user";
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public String uid;
     FirebaseAuth mAuth;
     EditText password, email, name;
     Button register;
-    public String uid;
     accountHelper helper;
-
-    private static final String TAG = "user";
-
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public volunteerRegister() {
     }
@@ -90,14 +85,13 @@ public class volunteerRegister extends Fragment {
                                 uid = currentUser.getUid();
 
 
-                                DocumentReference docRef = db.collection(helper.KEY_VOLUNTEER).document(uid);
+                                DocumentReference docRef = db.collection(accountHelper.KEY_VOLUNTEER).document(uid);
                                 CollectionReference itemsCollection = docRef.collection("myEvents");
 
                                 Map<String, Object> note = new HashMap<>();
-                                note.put(helper.KEY_USERNAME, Name);
-                                note.put(helper.KEY_EMAIL, Email);
-                                note.put(helper.KEY_PASSWORD, Password);
-
+                                note.put(accountHelper.KEY_USERNAME, Name);
+                                note.put(accountHelper.KEY_EMAIL, Email);
+                                note.put(accountHelper.KEY_PASSWORD, Password);
 
 
                                 docRef.set(note)
@@ -107,7 +101,7 @@ public class volunteerRegister extends Fragment {
                                                 Toast.makeText(getContext(), "Registration Successful", Toast.LENGTH_LONG).show();
                                                 helper.setAccountType(accountHelper.KEY_VOLUNTEER);
                                                 String temp = helper.getAccountType();
-                                                Log.d("Your_TAG",temp);
+                                                Log.d("Your_TAG", temp);
 
                                                 Intent intent = new Intent(getContext(), MainActivity.class);
                                                 startActivity(intent);

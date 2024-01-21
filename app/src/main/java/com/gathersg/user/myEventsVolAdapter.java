@@ -18,10 +18,16 @@ import com.google.firebase.firestore.Blob;
 import java.util.ArrayList;
 
 public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.ViewHolder> {
-    private Context context;
-    private ArrayList<String> nameList, descList, locNameList, dateList, orgList,statusList;
-    private ArrayList<Double> latList, lonList;
-    private ArrayList<Blob> imageList;
+    private final Context context;
+    private final ArrayList<String> nameList;
+    private final ArrayList<String> descList;
+    private final ArrayList<String> locNameList;
+    private final ArrayList<String> dateList;
+    private final ArrayList<String> orgList;
+    private final ArrayList<String> statusList;
+    private final ArrayList<Double> latList;
+    private final ArrayList<Double> lonList;
+    private final ArrayList<Blob> imageList;
 
     public myEventsVolAdapter(Context context, ArrayList<String> nameList, ArrayList<String> descList,
                               ArrayList<String> dateList, ArrayList<String> orgList,
@@ -78,7 +84,7 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.name.setText(nameList.get(position));
         holder.date.setText(dateList.get(position));
-       holder.status.setText(statusList.get(position));
+        holder.status.setText(statusList.get(position));
         Blob temp = imageList.get(position);
         // need change layout
 
@@ -89,6 +95,11 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
                     .load(imageData)
                     .into(holder.image);
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return nameList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -105,11 +116,6 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
             image = v.findViewById(R.id.myEventCardImage);
             // need change layout
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return nameList.size();
     }
 }
 

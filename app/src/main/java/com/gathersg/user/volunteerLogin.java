@@ -2,10 +2,6 @@ package com.gathersg.user;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,15 +23,13 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class volunteerLogin extends Fragment {
     public String uid;
-
+    public String accountType;
     FirebaseAuth auth;
     FirebaseUser user;
     FirebaseAuth mAuth;
-    public String accountType;
-
     accountHelper helper;
 
-    private EditText email,password;
+    private EditText email, password;
     private Button login;
 
 
@@ -45,10 +42,10 @@ public class volunteerLogin extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_volunteer_login, container, false);
         mAuth = FirebaseAuth.getInstance();
-        helper =new accountHelper();
+        helper = new accountHelper();
         email = view.findViewById(R.id.emailLoginVolunteer);
         password = view.findViewById(R.id.passwordLoginVolunteer);
-        login =view.findViewById(R.id.volunteerLogin);
+        login = view.findViewById(R.id.volunteerLogin);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +57,7 @@ public class volunteerLogin extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
+
     public void volunteerLogin() {
         String userEmail = email.getText().toString().trim();
         String userPassword = password.getText().toString().trim();
@@ -84,9 +82,9 @@ public class volunteerLogin extends Fragment {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("YourTag", "Login Successful");
                             Toast.makeText(requireContext(), "Login Successful.", Toast.LENGTH_SHORT).show();
-                            helper.setAccountType(helper.KEY_VOLUNTEER);
+                            helper.setAccountType(accountHelper.KEY_VOLUNTEER);
                             String temp = helper.getAccountType();
-                            Log.d("Your_TAG",temp);
+                            Log.d("Your_TAG", temp);
 
                             Intent intent = new Intent(requireContext(), MainActivity.class);
                             startActivity(intent);

@@ -5,33 +5,22 @@ import static com.gathersg.user.CalendarUtils.daysInMonthArray;
 import static com.gathersg.user.CalendarUtils.monthYearFromDate;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class calendar extends Fragment implements CalendarAdapter.OnItemListener {
-    public interface OnFragmentChangeListener {
-        void onFragmentChange(Fragment newFragment);
-    }
-
     private OnFragmentChangeListener listener;
-
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate;
@@ -69,7 +58,6 @@ public class calendar extends Fragment implements CalendarAdapter.OnItemListener
         return view;
     }
 
-
     private void setMonthView() {
         monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
         ArrayList<LocalDate> daysInMonth = daysInMonthArray(CalendarUtils.selectedDate);
@@ -80,7 +68,6 @@ public class calendar extends Fragment implements CalendarAdapter.OnItemListener
         calendarRecyclerView.setAdapter(calendarAdapter);
 
     }
-
 
     public void previousMonthAction(View view) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusMonths(1);
@@ -98,6 +85,10 @@ public class calendar extends Fragment implements CalendarAdapter.OnItemListener
             CalendarUtils.selectedDate = date;
             setMonthView();
         }
+    }
+
+    public interface OnFragmentChangeListener {
+        void onFragmentChange(Fragment newFragment);
     }
 
 }

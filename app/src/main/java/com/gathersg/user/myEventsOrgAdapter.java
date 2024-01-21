@@ -8,26 +8,41 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class myEventsOrgAdapter extends  RecyclerView.Adapter<myEventsOrgAdapter.ViewHolder> {
-    private Context context;
-    private ArrayList<String> nameList, descList, locNameList, dateList, orgList,statusList;
-    private ArrayList<Double> latList, lonList;
-    private ArrayList<Blob> imageList;
-    private ArrayList<Long> signUpList;
+public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.ViewHolder> {
+    private final Context context;
+    private final ArrayList<String> nameList;
+    private final ArrayList<String> descList;
+    private final ArrayList<String> locNameList;
+    private final ArrayList<String> dateList;
+    private final ArrayList<String> orgList;
+    private final ArrayList<String> statusList;
+    private final ArrayList<Double> latList;
+    private final ArrayList<Double> lonList;
+    private final ArrayList<Blob> imageList;
+    private final ArrayList<Long> signUpList;
 
     public myEventsOrgAdapter(Context context, ArrayList<String> nameList, ArrayList<String> descList,
                               ArrayList<String> dateList, ArrayList<String> orgList,
                               ArrayList<String> locNameList, ArrayList<Double> latList, ArrayList<Double> lonList,
-                              ArrayList<Blob> imageList, ArrayList<String> statusList,ArrayList<Long> signUpList) {
+                              ArrayList<Blob> imageList, ArrayList<String> statusList, ArrayList<Long> signUpList) {
         this.context = context;
         this.nameList = nameList;
         this.descList = descList;
@@ -38,7 +53,7 @@ public class myEventsOrgAdapter extends  RecyclerView.Adapter<myEventsOrgAdapter
         this.lonList = lonList;
         this.imageList = imageList;
         this.statusList = statusList;
-        this.signUpList =signUpList;
+        this.signUpList = signUpList;
         logArrayList("nameList", nameList);
         logArrayList("descList", descList);
         logArrayList("locNameList", locNameList);
@@ -83,7 +98,7 @@ public class myEventsOrgAdapter extends  RecyclerView.Adapter<myEventsOrgAdapter
         holder.desc.setText(descList.get(position));
         holder.organiser.setText(orgList.get(position));
         holder.loc.setText(locNameList.get(position));
-        Log.d("temp tag",signUpList.get(position).toString());
+        Log.d("temp tag", signUpList.get(position).toString());
         holder.number.setText((signUpList.get(position)).toString());
 
         Blob temp = imageList.get(position);
@@ -98,10 +113,18 @@ public class myEventsOrgAdapter extends  RecyclerView.Adapter<myEventsOrgAdapter
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return nameList.size();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView name,desc,date,organiser,loc,number;
+        TextView name, desc, date, organiser, loc, number;
         ImageView image;
-        Button closeSignUpButton,cancelEventButton;
+        Button closeSignUpButton, cancelEventButton;
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
         public ViewHolder(@NonNull View v) {
             super(v);
 
@@ -129,16 +152,51 @@ public class myEventsOrgAdapter extends  RecyclerView.Adapter<myEventsOrgAdapter
             // need change layout
         }
 
-        protected void closeSignUp(){
+        protected void closeSignUp() {
+
+            Map<String, Object> signUp = new HashMap<>();
+            signUp.put(eventHelper.KEY_SIGNUPSTATUS,eventHelper.KEY_CLOSE);
+            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition())).update(signUp).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Toast.makeText(context.getApplicationContext(),"Sign Up Closed",Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+
+
+
 
         }
-        protected void cancelEvent(){
+
+        protected void cancelEvent() {
+
 
         }
-    }
+        protected void deleteEvent(){
 
-    @Override
-    public int getItemCount() {
-        return nameList.size();
+            // Remove the event document from the collection
+            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition()))
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(context.getApplicationContext(), "Event Deleted",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Handle the failure to delete the event
+                            Toast.makeText(context.getApplicationContext(), "Event Delete Unsuccessful",Toast.LENGTH_SHORT).show();
+                            Log.e("DeleteEvent", "Error deleting event", e);
+                        }
+                    });
+        }
     }
 }

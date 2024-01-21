@@ -2,10 +2,6 @@ package com.gathersg.user;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,7 +30,7 @@ public class organiserLogin extends Fragment {
     FirebaseAuth mAuth;
     accountHelper helper;
 
-    private EditText email,password;
+    private EditText email, password;
     private Button login;
 
 
@@ -44,25 +43,27 @@ public class organiserLogin extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organiser_login, container, false);
         mAuth = FirebaseAuth.getInstance();
-        helper =new accountHelper();
+        helper = new accountHelper();
         email = view.findViewById(R.id.emailLoginOrganisers);
         password = view.findViewById(R.id.passwordLoginOrganisers);
-        login =view.findViewById(R.id.organiserLogin);
+        login = view.findViewById(R.id.organiserLogin);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               organiserLogin(String.valueOf(email.getText()),String.valueOf(password.getText()));
+                organiserLogin(String.valueOf(email.getText()), String.valueOf(password.getText()));
             }
         });
 
         // Inflate the layout for this fragment
         return view;
     }
-    public void organiserLogin(String email, String password){
-        if (TextUtils.isEmpty(email)){
+
+    public void organiserLogin(String email, String password) {
+        if (TextUtils.isEmpty(email)) {
             Toast.makeText(requireContext(), "Enter Email", Toast.LENGTH_SHORT).show();
             return;
-        }if (TextUtils.isEmpty(password)){
+        }
+        if (TextUtils.isEmpty(password)) {
             Toast.makeText(requireContext(), "Enter Password", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -70,14 +71,14 @@ public class organiserLogin extends Fragment {
         Log.d("YourTag", "Before signInWithEmailAndPassword");
 
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Toast.makeText(requireContext(), "Login Successful.",
                                     Toast.LENGTH_SHORT).show();
-                            helper.setAccountType(helper.KEY_ORGANISERS);
+                            helper.setAccountType(accountHelper.KEY_ORGANISERS);
 
 
                             Intent intent = new Intent(requireContext(), MainActivity.class);

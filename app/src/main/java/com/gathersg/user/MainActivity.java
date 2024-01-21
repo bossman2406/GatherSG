@@ -1,13 +1,5 @@
 package com.gathersg.user;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -18,6 +10,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,50 +31,50 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 
-public class MainActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener{
-    private Button button, saveDetails, weeklyButton;
-    private TextView textView,usernameNav;
-    private BottomNavigationView bottomNav;
+public class MainActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener {
+    private static final String TAG = "user";
+    private static final String KEY_TITLE = "username";
+    private static final String KEY_NUMBER = "number";
+    private final FragmentManager fragmentManager = getSupportFragmentManager();
+    public String uid;
     FirebaseAuth auth;
     FirebaseUser user;
+    accountHelper helper;
+    private Button button, saveDetails, weeklyButton;
+    private TextView textView, usernameNav;
+    private BottomNavigationView bottomNav;
     private userProfile userProfile;
     private calendar calendar;
     private allEvents allEvents;
-
     private weeklyCalendarOrg weeklyCalendarOrg;
     private weeklyCalendarVol weeklyCalendarVol;
-    private FragmentManager fragmentManager = getSupportFragmentManager();
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
-
-
     private EditText username, number;
-
-    private static final String TAG = "user";
-    private static final String KEY_TITLE = "username";
-    private static final String KEY_NUMBER = "number";
-    private FirebaseFirestore db ;
-    public String uid;
-    accountHelper helper;
-
+    private FirebaseFirestore db;
+    dataLinking dataLinking;
+    eventStatusService eventStatusService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        dataLinking.linkData();
+        eventStatusService.checkData();
+
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
-        auth =FirebaseAuth.getInstance();
-        String temp = helper.accountType;
-        Log.d("Your_Tag_help",temp);
+        auth = FirebaseAuth.getInstance();
+        String temp = accountHelper.accountType;
+        Log.d("Your_Tag_help", temp);
 
 
         FirebaseUser currentUser = auth.getCurrentUser();
         String uid = currentUser.getUid();
 
 
-
-        Log.d("Your_Tag",temp + uid);
+        Log.d("Your_Tag", temp + uid);
         DocumentReference docRef = db.collection(temp).document(uid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -88,14 +87,10 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         allEvents = new allEvents();
 
 
-
-
-
         bottomNav = findViewById(R.id.bottomNav);
-        if (helper.KEY_VOLUNTEER.equals(helper.accountType)){
+        if (accountHelper.KEY_VOLUNTEER.equals(accountHelper.accountType)) {
             bottomNav.getMenu().findItem(R.id.createEvent).setVisible(false);
         }
-
 
 
         onActivityStart();
@@ -111,22 +106,22 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 invalidateOptionsMenu();
-                if(id == R.id.homepage) {
+                if (id == R.id.homepage) {
                     fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, allEvents)
                             .setReorderingAllowed(true)
                             .addToBackStack(null)
                             .commit();
 //
                     return true;
-                }else if(id==R.id.calenderEvents){
+                } else if (id == R.id.calenderEvents) {
                     CalendarUtils.selectedDate = LocalDate.now();
                     Log.d("DATE", CalendarUtils.formattedDate(CalendarUtils.selectedDate));
-                    if(helper.accountType==helper.KEY_VOLUNTEER){
+                    if (accountHelper.accountType == accountHelper.KEY_VOLUNTEER) {
                         fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, weeklyCalendarVol)
                                 .setReorderingAllowed(true)
                                 .addToBackStack(null)
                                 .commit();
-                    } else if (helper.accountType==helper.KEY_ORGANISERS) {
+                    } else if (accountHelper.accountType == accountHelper.KEY_ORGANISERS) {
                         fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, weeklyCalendarOrg)
                                 .setReorderingAllowed(true)
                                 .addToBackStack(null)
@@ -137,12 +132,11 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                 } else if (id == R.id.myEvents) {
 
 
-
                     return true;
                 } else if (id == R.id.chatbot) {
                     return true;
                 } else if (id == R.id.createEvent) {
-                    Intent intent = new Intent(getApplicationContext(),eventOrganiserAddPhoto.class);
+                    Intent intent = new Intent(getApplicationContext(), eventOrganiserAddPhoto.class);
                     startActivity(intent);
                     finish();
                     return true;
@@ -157,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         drawerLayout = findViewById(R.id.drawerMain);
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout, R.string.nav_open ,R.string.nav_close);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
 
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -172,14 +166,14 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                if(id==R.id.accountNav){
+                if (id == R.id.accountNav) {
                     fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, userProfile)
                             .setReorderingAllowed(true)
                             .addToBackStack(null)
                             .commit();
                 }
-                if (id == R.id.logoutNav){
-                    Intent intent = new Intent(getApplicationContext(),Login.class);
+                if (id == R.id.logoutNav) {
+                    Intent intent = new Intent(getApplicationContext(), Login.class);
                     startActivity(intent);
                     finish();
 
@@ -195,8 +189,8 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         // DocumentSnapshot contains the data
-                        String data = document.getString(helper.KEY_USERNAME);
-                        if(usernameNav!=null) {
+                        String data = document.getString(accountHelper.KEY_USERNAME);
+                        if (usernameNav != null) {
                             usernameNav.setText(data);
                         }
                         Log.d("FirestoreData", "DocumentSnapshot data: " + data);
@@ -219,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 //            }
 //        });
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -230,31 +225,31 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         super.onConfigurationChanged(newConfig);
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
+
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
-    public void onItemClick(int position, LocalDate date)
-    {
-        if(date !=null)
-        {
-            CalendarUtils.selectedDate =date;
+    public void onItemClick(int position, LocalDate date) {
+        if (date != null) {
+            CalendarUtils.selectedDate = date;
         }
     }
 
-    public void onActivityStart(){
+    public void onActivityStart() {
         String data;
         Intent intent = getIntent();
 
         if (intent != null) {
             data = intent.getStringExtra("intent"); // Replace "key" with the key you used in putExtra
-            if(data == "viewPublishedEvents"){
+            if (data == "viewPublishedEvents") {
                 bottomNav.setSelectedItemId(R.id.myEvents);
             }
-        } else{
+        } else {
 
             bottomNav.setSelectedItemId(R.id.homepage);
         }

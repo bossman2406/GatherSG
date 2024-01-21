@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".attendace">
+    tools:context=".attendance">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,17 +25,23 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/eventPublishButton"
+            android:id="@+id/eventScanButton"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/orange"
-            android:layout_marginStart="20dp"
             android:text="Scan Event Code"
-            android:textSize="25dp"
+            android:textSize="20dp"
             android:textStyle="bold"
             app:cornerRadius="20dp"
             app:elevation="10dp" />
+
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp" />
 
     </LinearLayout>
 

@@ -1,9 +1,5 @@
 package com.gathersg.user;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentResolver;
@@ -19,35 +15,36 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 public class eventOrganiserAddPhoto extends AppCompatActivity {
 
+    private static final int REQUEST_IMAGE_PICK = 1;
+    private static final int CAMERA_REQUEST_CODE = 123;
+    private static final int MY_CAMERA_PERMISSION_REQUEST = 123;
     ImageView eventImage;
     Button selectImage;
     FloatingActionButton addDetails;
-
     TextView def;
     Dialog dialog;
     private byte[] imageData;
-
-    private static final int REQUEST_IMAGE_PICK = 1;
-    private static final int CAMERA_REQUEST_CODE = 123;
-    private static final int MY_CAMERA_PERMISSION_REQUEST = 123 ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_organiser_add_photo);
         eventImage = findViewById(R.id.eventOrganiserAddPhotoImage);
-        selectImage =findViewById(R.id.eventOrganierAddPhotoButton);
+        selectImage = findViewById(R.id.eventOrganierAddPhotoButton);
         addDetails = findViewById(R.id.eventOrganiserAddDetails);
         def = findViewById(R.id.defaultText);
         def.setVisibility(View.VISIBLE);
@@ -66,7 +63,7 @@ public class eventOrganiserAddPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button gallery = dialog.findViewById(R.id.gallery);
-                Button takePhoto =dialog.findViewById(R.id.takePhoto);
+                Button takePhoto = dialog.findViewById(R.id.takePhoto);
                 gallery.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -96,6 +93,7 @@ public class eventOrganiserAddPhoto extends AppCompatActivity {
         });
 
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,7 +112,6 @@ public class eventOrganiserAddPhoto extends AppCompatActivity {
                             )
                             .into(eventImage);
                     dialog.dismiss();
-
 
 
                 } catch (Exception e) {

@@ -4,6 +4,12 @@ import static com.gathersg.user.CalendarUtils.daysInWeekArray;
 import static com.gathersg.user.CalendarUtils.monthYearFromDate;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,13 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,26 +38,25 @@ import java.util.List;
 import java.util.Map;
 
 
-public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnItemListener {
+public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnItemListener {
 
+    FirebaseAuth auth;
+    myEventsOrgAdapter myEventsOrgAdapter;
+    eventHelper event;
+    accountHelper account;
+    Button nextWeekAction, previousWeekAction;
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
     private FirebaseFirestore db;
-    FirebaseAuth auth;
     private RecyclerView recyclerView;
-
-    myEventsOrgAdapter myEventsOrgAdapter;
+    dataLinking dataLinking;
+    eventStatusService eventStatusService;
     private List<eventHelper> eventHelpers;
-    eventHelper event;
-    accountHelper account;
-
     // Declare lists outside the onCreateView method
-    private ArrayList<String> nameList, descList, locNameList, dateList, orgList,statusList;
+    private ArrayList<String> nameList, descList, locNameList, dateList, orgList, statusList;
     private ArrayList<Double> latList, lonList;
     private ArrayList<Long> signUpList;
     private ArrayList<Blob> imageList;
-     Button nextWeekAction,previousWeekAction;
-
 
 
     public weeklyCalendarOrg() {
@@ -69,8 +67,9 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        View view  = inflater.inflate(R.layout.fragment_weekly_calendar, container, false);
+        dataLinking.linkData();
+        eventStatusService.checkData();
+        View view = inflater.inflate(R.layout.fragment_weekly_calendar, container, false);
         calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView);
         monthYearText = view.findViewById(R.id.monthYearTV);
         nextWeekAction = view.findViewById(R.id.nextWeekAction);
@@ -109,11 +108,10 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
         String uid = currentUser.getUid();
-        String temp = account.accountType;
+        String temp = accountHelper.accountType;
 
 
-
-        CollectionReference eventsCollection = db.collection(temp).document(uid).collection(account.KEY_MYEVENTS);
+        CollectionReference eventsCollection = db.collection(temp).document(uid).collection(accountHelper.KEY_MYEVENTS);
         eventsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -136,40 +134,40 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
 
                 for (DocumentSnapshot document : queryDocumentSnapshots) {
                     // Extract data from the document
-                    String eventName = document.getString(event.KEY_EVENTNAME);
-                    String eventDesc = document.getString(event.KEY_EVENTDESC);
-                    String date = document.getString(event.KEY_EVENTDATE);
-                    String organiser = document.getString(event.KEY_EVENTORG);
-                    String locName = document.getString(event.KEY_EVENTLOCNAME);
-                    Double lat = document.getDouble(event.KEY_LAT);
-                    Double lon = document.getDouble(event.KEY_LON);
-                    Blob image = document.getBlob(event.KEY_EVENTIMAGE);
-                    String status = document.getString(event.KEY_EVENTSTATUS);
+                    String eventName = document.getString(eventHelper.KEY_EVENTNAME);
+                    String eventDesc = document.getString(eventHelper.KEY_EVENTDESC);
+                    String date = document.getString(eventHelper.KEY_EVENTDATE);
+                    String organiser = document.getString(eventHelper.KEY_EVENTORG);
+                    String locName = document.getString(eventHelper.KEY_EVENTLOCNAME);
+                    Double lat = document.getDouble(eventHelper.KEY_LAT);
+                    Double lon = document.getDouble(eventHelper.KEY_LON);
+                    Blob image = document.getBlob(eventHelper.KEY_EVENTIMAGE);
+                    String status = document.getString(eventHelper.KEY_EVENTSTATUS);
 
 
-                    DocumentReference signUpDocument = db.collection(event.KEY_EVENTS).document(eventName);
+                    DocumentReference signUpDocument = db.collection(eventHelper.KEY_EVENTS).document(eventName);
                     signUpDocument.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             DocumentSnapshot userSignupDocument = task.getResult();
-                            Long temp = userSignupDocument.getLong(event.KEY_EVENTSIGNUP);
-                            DocumentReference tempRef = db.collection(account.KEY_ORGANISERS).document(uid).collection(account.KEY_MYEVENTS).document(eventName);
-                            Map<String,Object> eventSignUp = new HashMap<>();
-                            eventSignUp.put(event.KEY_EVENTSIGNUP,temp);
+                            Long temp = userSignupDocument.getLong(eventHelper.KEY_EVENTSIGNUP);
+                            DocumentReference tempRef = db.collection(accountHelper.KEY_ORGANISERS).document(uid).collection(accountHelper.KEY_MYEVENTS).document(eventName);
+                            Map<String, Object> eventSignUp = new HashMap<>();
+                            eventSignUp.put(eventHelper.KEY_EVENTSIGNUP, temp);
                             tempRef.update(eventSignUp).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    Log.d("SIGN UP","ADDED TO ORGANISER MY EVENTS");
+                                    Log.d("SIGN UP", "ADDED TO ORGANISER MY EVENTS");
                                 }
                             });
                         }
                     });
 
 
-                    Long pax = document.getLong(event.KEY_EVENTSIGNUP);
+                    Long pax = document.getLong(eventHelper.KEY_EVENTSIGNUP);
 
                     // Log the data for debugging
-                    Log.d("My_TAG", eventName + eventDesc + date + organiser + locName + lat + lon + image +status +pax);
+                    Log.d("My_TAG", eventName + eventDesc + date + organiser + locName + lat + lon + image + status + pax);
 
                     // Add data to lists
                     nameList.add(eventName);
@@ -185,10 +183,10 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
 
                     // Create an eventHelper object and add it to the list
                     eventHelper helper = new eventHelper();
-                    helper.uploadmyOrgEvents(eventName, eventDesc, date, organiser, locName, lat, lon, image,status,pax);
+                    helper.uploadmyOrgEvents(eventName, eventDesc, date, organiser, locName, lat, lon, image, status, pax);
                     eventHelpers.add(helper);
                 }
-                myEventsOrgAdapter = new myEventsOrgAdapter(getContext(), nameList, descList, dateList, orgList,locNameList, latList, lonList, imageList,statusList,signUpList);
+                myEventsOrgAdapter = new myEventsOrgAdapter(getContext(), nameList, descList, dateList, orgList, locNameList, latList, lonList, imageList, statusList, signUpList);
                 recyclerView.setAdapter(myEventsOrgAdapter);
 
                 // Update the RecyclerView with the new data
@@ -200,8 +198,8 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
 
         return view;
     }
-    private void setWeekView()
-    {
+
+    private void setWeekView() {
         monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
         ArrayList<LocalDate> days = daysInWeekArray(CalendarUtils.selectedDate);
 
@@ -213,21 +211,18 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
     }
 
 
-    public void previousWeekAction(View view)
-    {
+    public void previousWeekAction(View view) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.minusWeeks(1);
         setWeekView();
     }
 
-    public void nextWeekAction(View view)
-    {
+    public void nextWeekAction(View view) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusWeeks(1);
         setWeekView();
     }
 
     @Override
-    public void onItemClick(int position, LocalDate date)
-    {
+    public void onItemClick(int position, LocalDate date) {
         CalendarUtils.selectedDate = date;
         setWeekView();
     }

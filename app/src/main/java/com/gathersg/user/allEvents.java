@@ -1,21 +1,16 @@
 package com.gathersg.user;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,12 +24,14 @@ import java.util.List;
 
 public class allEvents extends Fragment {
 
+    eventHelper helper;
     private FirebaseFirestore db;
     private RecyclerView recyclerView;
+
+    dataLinking dataLinking;
+    eventStatusService eventStatusService;
     private upcomingEventAdapter upcomingEventAdapter;
     private List<eventHelper> eventHelpers;
-    eventHelper helper;
-
     // Declare lists outside the onCreateView method
     private ArrayList<String> nameList, descList, locNameList, dateList, orgList;
     private ArrayList<Double> latList, lonList;
@@ -47,6 +44,8 @@ public class allEvents extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        dataLinking.linkData();
+        eventStatusService.checkData();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_events, container, false);
         recyclerView = view.findViewById(R.id.allEventsRecyclerView);
@@ -87,14 +86,14 @@ public class allEvents extends Fragment {
 
                 for (DocumentSnapshot document : queryDocumentSnapshots) {
                     // Extract data from the document
-                    String eventName = document.getString(helper.KEY_EVENTNAME);
-                    String eventDesc = document.getString(helper.KEY_EVENTDESC);
-                    String date = document.getString(helper.KEY_EVENTDATE);
-                    String organiser = document.getString(helper.KEY_EVENTORG);
-                    String locName = document.getString(helper.KEY_EVENTLOCNAME);
-                    Double lat = document.getDouble(helper.KEY_LAT);
-                    Double lon = document.getDouble(helper.KEY_LON);
-                    Blob image = document.getBlob(helper.KEY_EVENTIMAGE);
+                    String eventName = document.getString(eventHelper.KEY_EVENTNAME);
+                    String eventDesc = document.getString(eventHelper.KEY_EVENTDESC);
+                    String date = document.getString(eventHelper.KEY_EVENTDATE);
+                    String organiser = document.getString(eventHelper.KEY_EVENTORG);
+                    String locName = document.getString(eventHelper.KEY_EVENTLOCNAME);
+                    Double lat = document.getDouble(eventHelper.KEY_LAT);
+                    Double lon = document.getDouble(eventHelper.KEY_LON);
+                    Blob image = document.getBlob(eventHelper.KEY_EVENTIMAGE);
 
                     // Log the data for debugging
                     Log.d("My_TAG", eventName + eventDesc + date + organiser + locName + lat + lon + image);
@@ -114,7 +113,7 @@ public class allEvents extends Fragment {
                     helper.uploadAllEvents(eventName, eventDesc, date, organiser, locName, lat, lon, image);
                     eventHelpers.add(helper);
                 }
-                upcomingEventAdapter = new upcomingEventAdapter(getContext(), nameList, descList, dateList, orgList,locNameList, latList, lonList, imageList);
+                upcomingEventAdapter = new upcomingEventAdapter(getContext(), nameList, descList, dateList, orgList, locNameList, latList, lonList, imageList);
                 recyclerView.setAdapter(upcomingEventAdapter);
 
                 // Update the RecyclerView with the new data
