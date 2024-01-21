@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -56,6 +57,7 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
     private ArrayList<Double> latList, lonList;
     private ArrayList<Long> signUpList;
     private ArrayList<Blob> imageList;
+     Button nextWeekAction,previousWeekAction;
 
 
 
@@ -71,6 +73,21 @@ public class weeklyCalendarOrg extends Fragment implements  CalendarAdapter.OnIt
         View view  = inflater.inflate(R.layout.fragment_weekly_calendar, container, false);
         calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView);
         monthYearText = view.findViewById(R.id.monthYearTV);
+        nextWeekAction = view.findViewById(R.id.nextWeekAction);
+        previousWeekAction = view.findViewById(R.id.previousWeekAction);
+        nextWeekAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextWeekAction(v);
+            }
+        });
+        previousWeekAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                previousWeekAction(v);
+            }
+        });
+        setWeekView();
         recyclerView = view.findViewById(R.id.myEventRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

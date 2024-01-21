@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class eventStatusService extends Service {
+public class eventStatusService {
     private Handler handler;
     private Runnable runnable;
     FirebaseFirestore db;
@@ -36,57 +36,17 @@ public class eventStatusService extends Service {
     eventHelper event;
     dateCompare dateCompare;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-         uid = currentUser.getUid();
-        accountType = account.accountType;
-
-
-
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                // Perform your background task here
-                checkData();
-
-                // Schedule the next execution after a certain interval (e.g., 10 seconds)
-                handler.postDelayed(this, 10000);
-            }
-        };
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        // Start the service when it is explicitly requested
-        handler.post(runnable);
-        return START_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // Not needed for this example
-        return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        // Stop the service when it is no longer needed
-        handler.removeCallbacks(runnable);
-        Toast.makeText(this, "Service Stopped", Toast.LENGTH_SHORT).show();
-    }
-
     private void checkData() {
         // Implement your data checking logic here
         // This method will be called periodically in the background
         // For example, you can check for updates, synchronize data, etc.
+
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        uid = currentUser.getUid();
+        accountType = account.accountType;
+
         CollectionReference events = db.collection(event.KEY_EVENTS);
         events.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -142,9 +102,5 @@ public class eventStatusService extends Service {
             }
         });
 
-
-
-
-        Toast.makeText(this, "Checking Data...", Toast.LENGTH_SHORT).show();
     }
 }

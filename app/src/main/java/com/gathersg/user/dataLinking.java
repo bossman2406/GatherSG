@@ -25,7 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.HashMap;
 import java.util.Map;
 
-public class dataLinking extends Service {
+public class dataLinking  {
 
     private static final String TAG = "dataLinkingService";
     private Handler handler;
@@ -37,54 +37,13 @@ public class dataLinking extends Service {
     private String accountType;
     private eventHelper event;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    private void linkData() {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
         uid = currentUser.getUid();
         accountType = account.accountType;
 
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                // Perform your background task here
-                linkData();
-
-                // Schedule the next execution after a certain interval (e.g., 10 seconds)
-                handler.postDelayed(this, 10000);
-            }
-        };
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        // Start the service when it is explicitly requested
-        handler.post(runnable);
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        // Stop the service when it is no longer needed
-        handler.removeCallbacks(runnable);
-        Toast.makeText(this, "Service Stopped", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // Not needed for this example
-        return null;
-    }
-
-    /**
-     * Perform data linking task by updating myEvents based on events data.
-     */
-    private void linkData() {
         CollectionReference userRef = db.collection(accountType);
         userRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override

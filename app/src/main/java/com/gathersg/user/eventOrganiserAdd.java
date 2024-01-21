@@ -199,45 +199,43 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                                                     Log.d("Fire", "FailedS Sign Up");
                                                                 }
                                                             });
+                                                        } else {
+                                                            CollectionReference volunteerEventsCollection = volunteerRef.collection(account.KEY_MYEVENTS);
+                                                            DocumentReference volunteerEventsDocument = volunteerEventsCollection.document(eventNameValue);
+                                                            Map<String, Object> myEvents = new HashMap<>();
+                                                            myEvents.put(helper.KEY_EVENTNAME, eventNameValue);
+                                                            myEvents.put(helper.KEY_EVENTDESC, eventDescValue);
+                                                            myEvents.put(helper.KEY_EVENTLOCNAME, eventLocNameValue);
+                                                            myEvents.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
+                                                            myEvents.put(helper.KEY_LAT, 0);
+                                                            myEvents.put(helper.KEY_LON, 0);
+                                                            myEvents.put(helper.KEY_EVENTDATE, eventDateValue);
+                                                            myEvents.put(helper.KEY_EVENTORG, eventOrg);
+                                                            myEvents.put(helper.KEY_EVENTSIGNUP, 0);
+                                                            myEvents.put(helper.KEY_EVENTSTATUS, helper.KEY_EVENTUPCOMING);
+
+                                                            // Add the imageData if available
+                                                            if (imageData != null) {
+                                                                Blob imageBlob = Blob.fromBytes(imageData);
+                                                                myEvents.put(helper.KEY_EVENTIMAGE, imageBlob);
+                                                            }
+                                                            volunteerEventsDocument.set(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void unused) {
+                                                                    Toast.makeText(getApplicationContext(), "Event Added Successfully.", Toast.LENGTH_SHORT).show();
+                                                                    Log.d("Firestore", "Event added to myEvents");
+
+                                                                }
+                                                            }).addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    Log.d("Fire", "FailedS Sign Up");
+                                                                }
+                                                            });
                                                         }
 
 
-                                                    } else {
-                                                        CollectionReference volunteerEventsCollection = volunteerRef.collection(account.KEY_MYEVENTS);
-                                                        DocumentReference volunteerEventsDocument = volunteerEventsCollection.document(eventNameValue);
-                                                        Map<String, Object> myEvents = new HashMap<>();
-                                                        myEvents.put(helper.KEY_EVENTNAME, eventNameValue);
-                                                        myEvents.put(helper.KEY_EVENTDESC, eventDescValue);
-                                                        myEvents.put(helper.KEY_EVENTLOCNAME, eventLocNameValue);
-                                                        myEvents.put(helper.KEY_EVENTMAXPAX, eventMaxPaxValue);
-                                                        myEvents.put(helper.KEY_LAT, 0);
-                                                        myEvents.put(helper.KEY_LON, 0);
-                                                        myEvents.put(helper.KEY_EVENTDATE, eventDateValue);
-                                                        myEvents.put(helper.KEY_EVENTORG, eventOrg);
-                                                        myEvents.put(helper.KEY_EVENTSIGNUP, 0);
-                                                        myEvents.put(helper.KEY_EVENTSTATUS, helper.KEY_EVENTUPCOMING);
-
-                                                        // Add the imageData if available
-                                                        if (imageData != null) {
-                                                            Blob imageBlob = Blob.fromBytes(imageData);
-                                                            myEvents.put(helper.KEY_EVENTIMAGE, imageBlob);
-                                                        }
-                                                        volunteerEventsDocument.set(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void unused) {
-                                                                Toast.makeText(getApplicationContext(), "Event Added Successfully.", Toast.LENGTH_SHORT).show();
-                                                                Log.d("Firestore", "Event added to myEvents");
-
-                                                            }
-                                                        }).addOnFailureListener(new OnFailureListener() {
-                                                            @Override
-                                                            public void onFailure(@NonNull Exception e) {
-                                                                Log.d("Fire", "FailedS Sign Up");
-                                                            }
-                                                        });
                                                     }
-
-
                                                 }
                                             });
 

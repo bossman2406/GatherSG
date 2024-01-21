@@ -113,8 +113,27 @@ public class myEventsOrgAdapter extends  RecyclerView.Adapter<myEventsOrgAdapter
             image = v.findViewById(R.id.eventCardImage);
             number = v.findViewById(R.id.myEventOrgSignUp);
             closeSignUpButton = v.findViewById(R.id.closeSignUpButton);
+            closeSignUpButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    closeSignUp();
+                }
+            });
             cancelEventButton = v.findViewById(R.id.cancelEventButton);
+            cancelEventButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cancelEvent();
+                }
+            });
             // need change layout
+        }
+
+        protected void closeSignUp(){
+
+        }
+        protected void cancelEvent(){
+
         }
     }
 

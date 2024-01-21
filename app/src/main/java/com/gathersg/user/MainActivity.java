@@ -88,13 +88,6 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         allEvents = new allEvents();
 
 
-//        Intent serviceIntent = new Intent(getApplicationContext(), eventStatusService.class);
-//        getApplicationContext().startService(serviceIntent);
-//        Intent service2Intent = new Intent(getApplicationContext(), dataLinking.class);
-//        getApplicationContext().startService(service2Intent);
-//        Log.d("service", "service started");
-
-
 
 
 
