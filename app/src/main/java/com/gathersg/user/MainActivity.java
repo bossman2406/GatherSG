@@ -59,22 +59,24 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        dataLinking = new dataLinking();
+        eventStatusService = new eventStatusService();
 
-        dataLinking.linkData();
+      //  dataLinking.linkData();
         eventStatusService.checkData();
+        eventStatusService.checkSignUp();
 
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         String temp = accountHelper.accountType;
-        Log.d("Your_Tag_help", temp);
 
 
         FirebaseUser currentUser = auth.getCurrentUser();
         String uid = currentUser.getUid();
 
 
-        Log.d("Your_Tag", temp + uid);
+
         DocumentReference docRef = db.collection(temp).document(uid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -107,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                 int id = item.getItemId();
                 invalidateOptionsMenu();
                 if (id == R.id.homepage) {
+                    eventStatusService.checkSignUp();
+                    eventStatusService.checkData();
+                   // dataLinking.linkData();
                     fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, allEvents)
                             .setReorderingAllowed(true)
                             .addToBackStack(null)
@@ -115,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     return true;
                 } else if (id == R.id.calenderEvents) {
                     CalendarUtils.selectedDate = LocalDate.now();
+                    eventStatusService.checkSignUp();
+                    eventStatusService.checkData();
+                    //dataLinking.linkData();
                     Log.d("DATE", CalendarUtils.formattedDate(CalendarUtils.selectedDate));
                     if (accountHelper.accountType == accountHelper.KEY_VOLUNTEER) {
                         fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, weeklyCalendarVol)
@@ -131,11 +139,33 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     return true;
                 } else if (id == R.id.myEvents) {
 
+                    eventStatusService.checkSignUp();
+                    eventStatusService.checkData();
+                   // dataLinking.linkData();
+                    if (accountHelper.accountType == accountHelper.KEY_VOLUNTEER){
+                        Intent intent = new Intent(getApplicationContext(), QrCode.class);
+                        startActivity(intent);
+                        finish();
+                    } else if(accountHelper.accountType == accountHelper.KEY_ORGANISERS){
+                        Intent intent = new Intent(getApplicationContext(), attendance.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
 
                     return true;
                 } else if (id == R.id.chatbot) {
+
+                    eventStatusService.checkSignUp();
+                    eventStatusService.checkData();
+                   // dataLinking.linkData();
+
                     return true;
                 } else if (id == R.id.createEvent) {
+                    eventStatusService.checkSignUp();
+                    eventStatusService.checkData();
+                  //  dataLinking.linkData();
+
                     Intent intent = new Intent(getApplicationContext(), eventOrganiserAddPhoto.class);
                     startActivity(intent);
                     finish();

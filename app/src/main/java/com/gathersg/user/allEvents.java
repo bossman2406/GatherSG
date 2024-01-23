@@ -44,8 +44,7 @@ public class allEvents extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        dataLinking.linkData();
-        eventStatusService.checkData();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_events, container, false);
         recyclerView = view.findViewById(R.id.allEventsRecyclerView);

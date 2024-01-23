@@ -35,6 +35,10 @@
         <activity
             android:name=".eventOrganiserAdd"
             android:exported="false" />
+        <activity android:name=".attendance"
+            android:exported="false"/>
+        <activity android:name=".QrCode"
+            android:exported="false"/>
         <!--
             Adding this meta data is required as of Google Mobile Ads SDK version 17.0.0 as explained in
             https://developers.google.com/ad-manager/mobile-ads-sdk/android/quick-start#update_your_androidmanifestxml

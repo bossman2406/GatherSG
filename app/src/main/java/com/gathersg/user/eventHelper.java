@@ -22,6 +22,8 @@ public class eventHelper {
     static String KEY_CLOSE= "Close";
     static String KEY_CANCELLED = "Cancelled";
 
+    public static final String KEY_ATTENDANCE = "attendance";
+
     public static final String KEY_SIGNUPSTATUS = "signUpStatus";
     public static String eventName;
     public static String eventDescription;

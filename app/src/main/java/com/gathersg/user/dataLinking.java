@@ -39,6 +39,8 @@ public class dataLinking {
         accountType = accountHelper.accountType;
 
         CollectionReference userRef = db.collection(accountType);
+        Log.d("Your_Tag",accountType);
+        Log.d("Your Tag","linking data");
 
                         CollectionReference myEventsRef = userRef.document(uid).collection(accountHelper.KEY_MYEVENTS);
                         myEventsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -47,8 +49,8 @@ public class dataLinking {
                                 if (task.isSuccessful()) {
                                     for (DocumentSnapshot doc : task.getResult()) {
                                         // for each myEvent name
-                                        String docId = doc.getId();
-                                        DocumentReference eventsRef = db.collection(eventHelper.KEY_EVENTS).document(docId);
+                                        String name = doc.getString(eventHelper.KEY_EVENTNAME);
+                                        DocumentReference eventsRef = db.collection(eventHelper.KEY_EVENTS).document(name);
                                         eventsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -65,7 +67,7 @@ public class dataLinking {
                                                     String status = document.getString(eventHelper.KEY_EVENTSTATUS);
                                                     Long signup = document.getLong(eventHelper.KEY_EVENTSIGNUP);
 
-                                                    DocumentReference myEventsNameRef = myEventsRef.document(docId);
+                                                    DocumentReference myEventsNameRef = myEventsRef.document(name);
                                                     Map<String, Object> myEvents = new HashMap<>();
                                                     myEvents.put(eventHelper.KEY_EVENTNAME, eventName);
                                                     myEvents.put(eventHelper.KEY_EVENTDESC, eventDesc);
