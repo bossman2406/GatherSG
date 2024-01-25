@@ -170,4 +170,16 @@ public class eventOrganiserAddPhoto extends AppCompatActivity {
             throw new Exception("Failed to open InputStream for selected image URI");
         }
     }
+    @Override
+    public void onBackPressed() {
+        // Add your custom behavior here
+        // For example, navigate to another activity
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+
+        // If you want to keep the default behavior (finish the activity), call super.onBackPressed()
+        super.onBackPressed();
+    }
 }

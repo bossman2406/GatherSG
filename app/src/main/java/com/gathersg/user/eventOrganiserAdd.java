@@ -309,4 +309,16 @@ public class eventOrganiserAdd extends AppCompatActivity {
         finish();
 
     }
+    @Override
+    public void onBackPressed() {
+        // Add your custom behavior here
+        // For example, navigate to another activity
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+
+        // If you want to keep the default behavior (finish the activity), call super.onBackPressed()
+        super.onBackPressed();
+    }
 }

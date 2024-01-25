@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -88,6 +89,7 @@ public class attendance extends AppCompatActivity {
             String uidAttendance = intentResult.getContents();
             if (uidAttendance != null) {
                 // Add attendance to Firestore
+                Toast.makeText(this,uidAttendance,Toast.LENGTH_LONG).show();
                 addAttendanceToFirestore(selectedEvent, uidAttendance);
             }
         } else {
@@ -122,5 +124,17 @@ public class attendance extends AppCompatActivity {
         eventStatusService.addAttendance(selectedEvent, uidAttendance, unused -> {
             Log.d("MYTAF", "User attended");
         });
+    }
+    @Override
+    public void onBackPressed() {
+        // Add your custom behavior here
+        // For example, navigate to another activity
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+
+        // If you want to keep the default behavior (finish the activity), call super.onBackPressed()
+        super.onBackPressed();
     }
 }

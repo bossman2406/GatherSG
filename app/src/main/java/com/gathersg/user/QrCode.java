@@ -1,5 +1,6 @@
 package com.gathersg.user;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -66,5 +67,18 @@ public class QrCode extends AppCompatActivity {
         } catch (WriterException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Add your custom behavior here
+        // For example, navigate to another activity
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+
+        // If you want to keep the default behavior (finish the activity), call super.onBackPressed()
+        super.onBackPressed();
     }
 }
