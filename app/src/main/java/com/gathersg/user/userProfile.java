@@ -6,21 +6,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class userProfile extends Fragment {
 
+    FirebaseFirestore db;
+    FirebaseAuth auth;
+
     FragmentContainerView fragmentContainerView;
     personal_info personalInfo;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    TextView username,uid;
+    TextView username,uidText;
     CircleImageView imageView;
 
     public userProfile() {
@@ -34,10 +47,36 @@ public class userProfile extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         personalInfo = new personal_info();
         username = view.findViewById(R.id.usernameProfile);
-        uid = view.findViewById(R.id.uidProfile);
+        uidText = view.findViewById(R.id.uidProfile);
+        imageView = view.findViewById(R.id.profile_image);
         //add db to get username , uid and image;
-        username.setText();
-        uid.setText();
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        String uid = currentUser.getUid();
+        String temp = accountHelper.accountType;
+        db.collection(temp).document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(snapshot.exists()){
+                        String name = snapshot.getString(accountHelper.KEY_USERNAME);
+                        username.setText(name);
+                        Blob image = snapshot.getBlob(accountHelper.KEY_IMAGE);
+                        if(image != null) {
+                            byte[] imageData;
+                            imageData = image.toBytes();
+                            Glide.with(getActivity())
+                                    .load(imageData)
+                                    .into(imageView);
+                        }
+                    }
+                }
+            }
+        });
+
+        uidText.setText("UID: " + uid);
         fragmentContainerView = view.findViewById(R.id.userfragmentContainer);
         fragmentManager = getChildFragmentManager();
         fragmentTransaction = fragmentTransaction;

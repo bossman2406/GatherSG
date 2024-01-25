@@ -147,7 +147,7 @@ public class eventHelper {
         eventLongitude = 0.0;
         eventImage = image;
         eventStatus = status;
-        eventSignUp = pax;
+        eventSignUp = (pax != null) ? pax : 0;
     }
 
 }

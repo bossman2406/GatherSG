@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -38,6 +39,7 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
     private final ArrayList<Double> lonList;
     private final ArrayList<Blob> imageList;
     private final ArrayList<Long> signUpList;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public myEventsOrgAdapter(Context context, ArrayList<String> nameList, ArrayList<String> descList,
                               ArrayList<String> dateList, ArrayList<String> orgList,
@@ -178,25 +180,28 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
 
 
         }
-        protected void deleteEvent(){
 
-            // Remove the event document from the collection
-            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition()))
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(context.getApplicationContext(), "Event Deleted",Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Handle the failure to delete the event
-                            Toast.makeText(context.getApplicationContext(), "Event Delete Unsuccessful",Toast.LENGTH_SHORT).show();
-                            Log.e("DeleteEvent", "Error deleting event", e);
-                        }
-                    });
-        }
+    }
+    public void deleteEvent(int position){
+
+        // Remove the event document from the collection
+
+        db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position))
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(context.getApplicationContext(), "Event Deleted",Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle the failure to delete the event
+                        Toast.makeText(context.getApplicationContext(), "Event Delete Unsuccessful",Toast.LENGTH_SHORT).show();
+                        Log.e("DeleteEvent", "Error deleting event", e);
+                    }
+                });
+
     }
 }

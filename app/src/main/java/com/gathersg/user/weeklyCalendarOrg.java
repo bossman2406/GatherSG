@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -187,6 +188,20 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
                 }
                 myEventsOrgAdapter = new myEventsOrgAdapter(getContext(), nameList, descList, dateList, orgList, locNameList, latList, lonList, imageList, statusList, signUpList);
                 recyclerView.setAdapter(myEventsOrgAdapter);
+
+                new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        myEventsOrgAdapter.deleteEvent(viewHolder.getAdapterPosition());
+                        myEventsOrgAdapter.notifyDataSetChanged();
+
+                    }
+                }).attachToRecyclerView(recyclerView);
 
                 // Update the RecyclerView with the new data
                 if (myEventsOrgAdapter != null) {

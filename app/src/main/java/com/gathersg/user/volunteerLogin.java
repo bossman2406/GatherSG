@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -28,6 +29,8 @@ public class volunteerLogin extends Fragment {
     FirebaseUser user;
     FirebaseAuth mAuth;
     accountHelper helper;
+
+
 
     private EditText email, password;
     private Button login;
@@ -85,6 +88,9 @@ public class volunteerLogin extends Fragment {
                             helper.setAccountType(accountHelper.KEY_VOLUNTEER);
                             String temp = helper.getAccountType();
                             Log.d("Your_TAG", temp);
+
+
+
 
                             Intent intent = new Intent(requireContext(), MainActivity.class);
                             startActivity(intent);

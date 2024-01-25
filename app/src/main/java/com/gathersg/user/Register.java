@@ -7,36 +7,24 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-
 public class Register extends AppCompatActivity {
 
-    FragmentManager fragmentManager = getSupportFragmentManager();
-    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+    private FragmentManager fragmentManager = getSupportFragmentManager();
     private Button volunteers, organiser;
     private TextView textView;
 
     private volunteerRegister volunteerRegister;
     private organiserRegister organiserRegister;
 
-
-    //    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        if(currentUser != null){
-//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
-//    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
         volunteers = findViewById(R.id.volunteerButton);
         organiser = findViewById(R.id.organiserButton);
         textView = findViewById(R.id.logintext);
@@ -47,47 +35,47 @@ public class Register extends AppCompatActivity {
         volunteers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                fragmentManager.beginTransaction().replace(R.id.registerFragmentContainer, volunteerRegister)
-                        .setReorderingAllowed(true)
-                        .addToBackStack(null)
-                        .commit();
-                volunteers.setVisibility(View.INVISIBLE);
-                organiser.setVisibility(View.INVISIBLE);
-                textView.setVisibility(View.INVISIBLE);
+                navigateToFragment(volunteerRegister);
             }
         });
+
         organiser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragmentManager.beginTransaction().replace(R.id.registerFragmentContainer, organiserRegister)
-                        .setReorderingAllowed(true)
-                        .addToBackStack(null)
-                        .commit();
-                volunteers.setVisibility(View.INVISIBLE);
-                organiser.setVisibility(View.INVISIBLE);
-                textView.setVisibility(View.INVISIBLE);
-
+                navigateToFragment(organiserRegister);
             }
         });
-
-
     }
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
-            volunteers.setVisibility(View.VISIBLE);
-            organiser.setVisibility(View.VISIBLE);
-            textView.setVisibility(View.VISIBLE);
-        } else if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
+        super.onBackPressed();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+            showViewsAfterBackStack();
         } else {
-            super.onBackPressed();
+            startActivity(new Intent(getApplicationContext(), Login.class));
         }
     }
 
+    private void navigateToFragment(Fragment fragment) {
+        fragmentManager.beginTransaction()
+                .replace(R.id.registerFragmentContainer, fragment)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
+        hideViewsForFragment();
+    }
 
+    private void hideViewsForFragment() {
+        volunteers.setVisibility(View.INVISIBLE);
+        organiser.setVisibility(View.INVISIBLE);
+        textView.setVisibility(View.INVISIBLE);
+    }
+
+    private void showViewsAfterBackStack() {
+        volunteers.setVisibility(View.VISIBLE);
+        organiser.setVisibility(View.VISIBLE);
+        textView.setVisibility(View.VISIBLE);
+    }
 }
