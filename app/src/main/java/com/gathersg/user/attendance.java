@@ -11,16 +11,28 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class attendance extends AppCompatActivity {
     Button button;
@@ -29,6 +41,9 @@ public class attendance extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     List<String> nameList;
     String selectedEvent;
+    FirebaseFirestore db =FirebaseFirestore.getInstance();
+    FirebaseAuth auth= FirebaseAuth.getInstance();
+    FirebaseUser currentUser = auth.getCurrentUser();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,10 +135,57 @@ public class attendance extends AppCompatActivity {
         });
     }
 
-    private void addAttendanceToFirestore(String selectedEvent, String uidAttendance) {
-        eventStatusService.addAttendance(selectedEvent, uidAttendance, unused -> {
-            Log.d("MYTAF", "User attended");
+    private void  addAttendanceToFirestore(String selectedEvent, String uidAttendance) {
+        DocumentReference attendanceRef = db.collection(eventHelper.KEY_EVENTS).document(selectedEvent).collection(eventHelper.KEY_EVENTATTENDANCE).document(uidAttendance);
+        attendanceRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot temp = task.getResult();
+                    if(temp.exists()){
+                        Toast.makeText(getApplicationContext(),"Volunteer has already Signed up",Toast.LENGTH_SHORT).show();
+                    }else{
+
+                        DocumentReference volunteer = db.collection(accountHelper.KEY_VOLUNTEER).document(uidAttendance);
+
+                        volunteer.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(task.isSuccessful()){
+                                    DocumentSnapshot temp1 = task.getResult();
+                                    String name = temp1.getString(accountHelper.KEY_USERNAME);
+                                    String email = temp1.getString(accountHelper.KEY_EMAIL);
+                                    String number = temp1.getString(accountHelper.KEY_NUMBER);
+                                    Long via  = temp1.getLong(accountHelper.KEY_VIA);
+
+                                    Map<String, Object> volunteerData = new HashMap<>();
+                                    volunteerData.put(accountHelper.KEY_USERNAME,name);
+                                    volunteerData.put(accountHelper.KEY_EMAIL,email);
+                                    volunteerData.put(accountHelper.KEY_NUMBER,number);
+                                    volunteerData.put(accountHelper.KEY_VIA,via);
+                                    attendanceRef.set(volunteerData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            //Log and toast
+                                        }
+                                    });
+
+                                }
+
+                            }
+                        });
+
+
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //add toast
+            }
         });
+
     }
     @Override
     public void onBackPressed() {
