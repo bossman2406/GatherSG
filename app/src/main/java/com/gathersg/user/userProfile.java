@@ -4,11 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class userProfile extends Fragment {
@@ -17,6 +20,8 @@ public class userProfile extends Fragment {
     personal_info personalInfo;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
+    TextView username,uid;
+    CircleImageView imageView;
 
     public userProfile() {
         // Required empty public constructor
@@ -28,6 +33,11 @@ public class userProfile extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         personalInfo = new personal_info();
+        username = view.findViewById(R.id.usernameProfile);
+        uid = view.findViewById(R.id.uidProfile);
+        //add db to get username , uid and image;
+        username.setText();
+        uid.setText();
         fragmentContainerView = view.findViewById(R.id.userfragmentContainer);
         fragmentManager = getChildFragmentManager();
         fragmentTransaction = fragmentTransaction;

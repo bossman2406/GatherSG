@@ -145,35 +145,51 @@ public class attendance extends AppCompatActivity {
                     if(temp.exists()){
                         Toast.makeText(getApplicationContext(),"Volunteer has already Signed up",Toast.LENGTH_SHORT).show();
                     }else{
-
-                        DocumentReference volunteer = db.collection(accountHelper.KEY_VOLUNTEER).document(uidAttendance);
-
-                        volunteer.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        DocumentReference eventSignUp = db.collection(eventHelper.KEY_EVENTS).document(selectedEvent).collection(eventHelper.KEY_EVENTSIGNUP).document(uidAttendance);
+                        eventSignUp.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                 if(task.isSuccessful()){
-                                    DocumentSnapshot temp1 = task.getResult();
-                                    String name = temp1.getString(accountHelper.KEY_USERNAME);
-                                    String email = temp1.getString(accountHelper.KEY_EMAIL);
-                                    String number = temp1.getString(accountHelper.KEY_NUMBER);
-                                    Long via  = temp1.getLong(accountHelper.KEY_VIA);
+                                    DocumentSnapshot temp2 = task.getResult();
+                                    if(temp2.exists()){
+                                        DocumentReference volunteer = db.collection(accountHelper.KEY_VOLUNTEER).document(uidAttendance);
 
-                                    Map<String, Object> volunteerData = new HashMap<>();
-                                    volunteerData.put(accountHelper.KEY_USERNAME,name);
-                                    volunteerData.put(accountHelper.KEY_EMAIL,email);
-                                    volunteerData.put(accountHelper.KEY_NUMBER,number);
-                                    volunteerData.put(accountHelper.KEY_VIA,via);
-                                    attendanceRef.set(volunteerData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            //Log and toast
-                                        }
-                                    });
+                                        volunteer.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                if(task.isSuccessful()){
+                                                    DocumentSnapshot temp1 = task.getResult();
+                                                    String name = temp1.getString(accountHelper.KEY_USERNAME);
+                                                    String email = temp1.getString(accountHelper.KEY_EMAIL);
+                                                    String number = temp1.getString(accountHelper.KEY_NUMBER);
+                                                    Long via  = temp1.getLong(accountHelper.KEY_VIA);
 
+                                                    Map<String, Object> volunteerData = new HashMap<>();
+                                                    volunteerData.put(accountHelper.KEY_USERNAME,name);
+                                                    volunteerData.put(accountHelper.KEY_EMAIL,email);
+                                                    volunteerData.put(accountHelper.KEY_NUMBER,number);
+                                                    volunteerData.put(accountHelper.KEY_VIA,via);
+                                                    attendanceRef.set(volunteerData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            //Log and toast
+                                                            Toast.makeText(getApplicationContext(),name + " attendance recorded",Toast.LENGTH_SHORT).show();
+                                                            Log.d("Attendance",name + " attendance recorded");
+                                                        }
+                                                    });
+
+                                                }
+
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(getApplicationContext(),"Volunteer has not signed up for event",Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-
                             }
                         });
+
+
 
 
                     }

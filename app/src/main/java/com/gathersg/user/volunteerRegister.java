@@ -92,6 +92,7 @@ public class volunteerRegister extends Fragment {
                                 note.put(accountHelper.KEY_USERNAME, Name);
                                 note.put(accountHelper.KEY_EMAIL, Email);
                                 note.put(accountHelper.KEY_PASSWORD, Password);
+                                note.put(accountHelper.KEY_VIA, 0.0 );
 
 
                                 docRef.set(note)
