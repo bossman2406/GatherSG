@@ -59,6 +59,9 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        dataLinking = new dataLinking();
+        dataLinking.linkData();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_weekly_calendar, container, false);
         calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView);

@@ -67,28 +67,21 @@ public class eventStatusService {
                                 // Compare the two dates
                                 int comparisonResult = currentDate.compareTo(inputDate);
                                 DocumentReference eventStatus = db.collection(eventHelper.KEY_EVENTS).document(name);
+
+                                DocumentReference myEventStatus = db.collection(accountType).document(uid).collection(accountHelper.KEY_MYEVENTS).document(name);
+
                                 Map<String, Object> myEvents = new HashMap<>();
-                                if (comparisonResult < 0) {
+                                if (comparisonResult > 1) {
                                     myEvents.put(eventHelper.KEY_EVENTSTATUS, eventHelper.KEY_EVENTUPCOMING);
                                     Log.d("DATE", "Input date is in the future.");
                                 } else {
                                     myEvents.put(eventHelper.KEY_EVENTSTATUS, eventHelper.KEY_EVENTCONCLUDED);
                                     Log.d("DATE", "Input date is in the past.");
                                 }
+                                myEventStatus.update(eventHelper.KEY_EVENTSTATUS, myEvents.get(eventHelper.KEY_EVENTSTATUS));
+
                                 eventStatus.update(eventHelper.KEY_EVENTSTATUS, myEvents.get(eventHelper.KEY_EVENTSTATUS));
-
-                                // For checking sign up
-                                DocumentReference signUpStatus = db.collection(eventHelper.KEY_EVENTS).document(name);
-                                myEvents.clear();
-                                if (comparisonResult < 0) {
-                                    myEvents.put(eventHelper.KEY_SIGNUPSTATUS, eventHelper.KEY_CLOSE);
-                                    Log.d("DATE", "Input date is in the future.");
-                                } else {
-                                    myEvents.put(eventHelper.KEY_SIGNUPSTATUS, eventHelper.KEY_OPEN);
-                                    Log.d("DATE", "Input date is in the past.");
-                                }
-                                signUpStatus.update(eventHelper.KEY_SIGNUPSTATUS, myEvents.get(eventHelper.KEY_SIGNUPSTATUS));
-
+                                checkSignUp();
 
                             }
                         }
@@ -113,59 +106,68 @@ public class eventStatusService {
         // Implement your data checking logic here
         // This method will be called periodically in the background
         // For example, you can check for updates, synchronize data, etc.
-//
-//        db = FirebaseFirestore.getInstance();
-//        auth = FirebaseAuth.getInstance();
-//        FirebaseUser currentUser = auth.getCurrentUser();
-//        uid = currentUser.getUid();
-//        accountType = accountHelper.accountType;
-//
-//        CollectionReference events = db.collection(eventHelper.KEY_EVENTS);
-//        events.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    for (DocumentSnapshot document : task.getResult()) {
-//                        Long signUp = document.getLong(eventHelper.KEY_EVENTSIGNUP);
-//                        Long max = document.getLong(eventHelper.KEY_EVENTMAXPAX);
-//                        String name = document.getString(eventHelper.KEY_EVENTNAME);
-//
-//                                // Compare the two dates
-//                                int comparisonResult = max.compareTo(signUp);
-//                                DocumentReference eventStatus = db.collection(eventHelper.KEY_EVENTS).document(name);
-//                                Map<String, Object> myEvents = new HashMap<>();
-//                                if (comparisonResult < 0) {
-//                                    myEvents.put(eventHelper.KEY_SIGNUPSTATUS, eventHelper.KEY_CLOSE);
-//                                    Log.d("DATE", "Input date is in the future.");
-//                                } else {
-//                                    myEvents.put(eventHelper.KEY_SIGNUPSTATUS, eventHelper.KEY_OPEN);
-//                                    Log.d("DATE", "Input date is in the past.");
-//                                }
-//                                eventStatus.update(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void unused) {
-//                                        Log.d("DATE", "Input successful");
-//
-//                                    }
-//                                });
-//                    }
-//                }
-//
-//            }
-//        }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//            @Override
-//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//
-//            }
-//        });
-//
-//    }
+
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        uid = currentUser.getUid();
+        accountType = accountHelper.accountType;
+
+        CollectionReference events = db.collection(eventHelper.KEY_EVENTS);
+        events.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+                        Long signUp = document.getLong(eventHelper.KEY_EVENTSIGNUP);
+                        Long max = document.getLong(eventHelper.KEY_EVENTMAXPAX);
+                        String name = document.getString(eventHelper.KEY_EVENTNAME);
+
+                                // Compare the two dates
+                                int comparisonResult = max.compareTo(signUp);
+                                DocumentReference eventStatus = db.collection(eventHelper.KEY_EVENTS).document(name);
+                                DocumentReference myEventStatus = db.collection(accountType).document(uid).collection(accountHelper.KEY_MYEVENTS).document(name);
+
+                                Map<String, Object> myEvents = new HashMap<>();
+                        if (comparisonResult < 1) {
+                            myEvents.put(eventHelper.KEY_SIGNUPSTATUS, eventHelper.KEY_CLOSE);
+                            Log.d("signup", "sign up  closed.");
+                        } else {
+                            myEvents.put(eventHelper.KEY_SIGNUPSTATUS, eventHelper.KEY_OPEN);
+                            Log.d("sign up", "sign up open.");
+                        }
+                                eventStatus.update(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.d("signUp", "Input successful");
+
+                                    }
+                                });
+                        myEventStatus.update(myEvents).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d("signUp", "Input successful");
+
+                            }
+                        });
+                    }
+                }
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
     }
+
     public static void signUpForEvent(String eventName, String uid, Context context, View view) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection(accountHelper.KEY_VOLUNTEER).document(uid);
@@ -264,9 +266,12 @@ public class eventStatusService {
                         String status = document.getString(eventHelper.KEY_EVENTSTATUS);
 
                         long newCount = (currentCount != null) ? currentCount + 1 : 1;
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                         Map<String, Object> eventData = new HashMap<>();
                         eventData.put(eventHelper.KEY_EVENTSIGNUP, newCount);
+                        DocumentReference orgMyEvents = db.collection(accountHelper.KEY_ORGANISERS).document(uid).collection(accountHelper.KEY_MYEVENTS).document(eventName);
+                        orgMyEvents.update(eventData);
 
                         // Update the count field in the document
                         eventRef.update(eventData)

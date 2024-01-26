@@ -14,9 +14,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class dataLinking {
@@ -39,65 +44,73 @@ public class dataLinking {
         accountType = accountHelper.accountType;
 
         CollectionReference userRef = db.collection(accountType);
-        Log.d("Your_Tag",accountType);
-        Log.d("Your Tag","linking data");
+        Log.d("Your_Tag", accountType);
+        Log.d("Your Tag", "linking data");
+        CollectionReference sourceCollectionRef = db.collection(eventHelper.KEY_EVENTS);
 
-                        CollectionReference myEventsRef = userRef.document(uid).collection(accountHelper.KEY_MYEVENTS);
-                        myEventsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (DocumentSnapshot doc : task.getResult()) {
-                                        // for each myEvent name
-                                        String name = doc.getString(eventHelper.KEY_EVENTNAME);
-                                        DocumentReference eventsRef = db.collection(eventHelper.KEY_EVENTS).document(name);
-                                        eventsRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    DocumentSnapshot document = task.getResult();
-                                                    String eventName = document.getString(eventHelper.KEY_EVENTNAME);
-                                                    String eventDesc = document.getString(eventHelper.KEY_EVENTDESC);
-                                                    String date = document.getString(eventHelper.KEY_EVENTDATE);
-                                                    String organiser = document.getString(eventHelper.KEY_EVENTORG);
-                                                    String locName = document.getString(eventHelper.KEY_EVENTLOCNAME);
-                                                    Double lat = document.getDouble(eventHelper.KEY_LAT);
-                                                    Double lon = document.getDouble(eventHelper.KEY_LON);
-                                                    Blob image = document.getBlob(eventHelper.KEY_EVENTIMAGE);
-                                                    String status = document.getString(eventHelper.KEY_EVENTSTATUS);
-                                                    Long signup = document.getLong(eventHelper.KEY_EVENTSIGNUP);
+// Reference to the target collection
+        CollectionReference targetCollectionRef = db.collection(accountType).document(uid).collection(accountHelper.KEY_MYEVENTS);
 
-                                                    DocumentReference myEventsNameRef = myEventsRef.document(name);
-                                                    Map<String, Object> myEvents = new HashMap<>();
-                                                    myEvents.put(eventHelper.KEY_EVENTNAME, eventName);
-                                                    myEvents.put(eventHelper.KEY_EVENTDESC, eventDesc);
-                                                    myEvents.put(eventHelper.KEY_EVENTLOCNAME, locName);
-                                                    myEvents.put(eventHelper.KEY_LAT, lat);
-                                                    myEvents.put(eventHelper.KEY_LON, lon);
-                                                    myEvents.put(eventHelper.KEY_EVENTDATE, date);
-                                                    myEvents.put(eventHelper.KEY_EVENTORG, organiser);
-                                                    myEvents.put(eventHelper.KEY_EVENTSTATUS, status);
-                                                    myEvents.put(eventHelper.KEY_EVENTIMAGE, image);
-                                                    myEvents.put(eventHelper.KEY_EVENTSIGNUP, signup);
-                                                    myEventsNameRef.update(myEvents).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            Log.d(TAG, "Data linking success");
-                                                        }
-                                                    });
-                                                } else {
-                                                    Log.e(TAG, "Error getting events document", task.getException());
-                                                }
-                                            }
-                                        });
+// Fetch all documents from the source collection
+        targetCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null) {
+                        // Get a list of document IDs in the source collection
+                        for (QueryDocumentSnapshot targetDocument : querySnapshot) {
+                            String name = targetDocument.getString(eventHelper.KEY_EVENTNAME);
+                            DocumentReference eventRef = db.collection(eventHelper.KEY_EVENTS).document(name);
+                            getData(eventRef,name,uid);
 
-                                    }
-                                } else {
-                                    Log.e(TAG, "Error getting myEvents documents", task.getException());
-                                }
-                            }
-                        });
+                        }
 
+
+
+                    } else {
+                        // Handle the case where the source collection is empty
+                        Log.d("document", "Source collection is empty");
                     }
+                } else {
+                    // Handle errors in fetching documents from the source collection
+                    Log.e(TAG, "Error fetching documents from source collection", task.getException());
                 }
+            }
+        });
+
+
+    }
+    public void getData(DocumentReference eventRef, String name,String uid){
+        eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        Long signUp = document.getLong(eventHelper.KEY_EVENTSIGNUP);
+                        String eventStatus = document.getString(eventHelper.KEY_EVENTSTATUS);
+                        String signUpStatus = document.getString(eventHelper.KEY_SIGNUPSTATUS);
+                        DocumentReference targetCollectionRef = db.collection(accountType).document(uid).collection(accountHelper.KEY_MYEVENTS).document(name);
+                        addData(targetCollectionRef,signUp,eventStatus,signUpStatus);
+                    }
+
+                }
+            }
+        });
+
+    }
+    public void addData(DocumentReference documentReference,Long signUp,String eventStatus,String signUpStatus){
+        Map<String, Object> addData = new HashMap<>();
+        addData.put(eventHelper.KEY_EVENTSIGNUP,signUp);
+        addData.put(eventHelper.KEY_EVENTSTATUS,eventStatus);
+        addData.put(eventHelper.KEY_SIGNUPSTATUS,signUpStatus);
+        documentReference.update(addData).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+            }
+        });
+    }
+}
 

@@ -18,10 +18,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +45,8 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
     private final ArrayList<Blob> imageList;
     private final ArrayList<Long> signUpList;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+
 
     public myEventsOrgAdapter(Context context, ArrayList<String> nameList, ArrayList<String> descList,
                               ArrayList<String> dateList, ArrayList<String> orgList,
@@ -184,6 +191,9 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
     }
     public void deleteEvent(int position){
 
+        FirebaseUser currentUser = auth.getCurrentUser();
+        String uid = currentUser.getUid();
+
         // Remove the event document from the collection
 
         db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position))
@@ -202,6 +212,22 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
                         Log.e("DeleteEvent", "Error deleting event", e);
                     }
                 });
+        CollectionReference collectionReference = db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position)).collection(eventHelper.KEY_EVENTSIGNUP);
+
+// Delete all documents in the collection
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        document.getReference().delete();
+                    }
+                } else {
+                    // Handle errors
+                }
+            }
+        });
+        db.collection(accountHelper.KEY_ORGANISERS).document(uid).collection(accountHelper.KEY_MYEVENTS).document(nameList.get(position)).delete();
 
     }
 }

@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
       //  dataLinking.linkData();
         eventStatusService.checkData();
         eventStatusService.checkSignUp();
+        dataLinking.linkData();
 
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
@@ -109,8 +110,9 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                 int id = item.getItemId();
                 invalidateOptionsMenu();
                 if (id == R.id.homepage) {
-                    eventStatusService.checkSignUp();
                     eventStatusService.checkData();
+                    eventStatusService.checkSignUp();
+                    dataLinking.linkData();
                    // dataLinking.linkData();
                     fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, allEvents)
                             .setReorderingAllowed(true)
@@ -120,8 +122,9 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     return true;
                 } else if (id == R.id.calenderEvents) {
                     CalendarUtils.selectedDate = LocalDate.now();
-                    eventStatusService.checkSignUp();
                     eventStatusService.checkData();
+                    eventStatusService.checkSignUp();
+                    dataLinking.linkData();
                     //dataLinking.linkData();
                     Log.d("DATE", CalendarUtils.formattedDate(CalendarUtils.selectedDate));
                     if (accountHelper.accountType == accountHelper.KEY_VOLUNTEER) {
@@ -139,8 +142,9 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     return true;
                 } else if (id == R.id.myEvents) {
 
-                    eventStatusService.checkSignUp();
                     eventStatusService.checkData();
+                    eventStatusService.checkSignUp();
+                    dataLinking.linkData();
                    // dataLinking.linkData();
                     if (accountHelper.accountType == accountHelper.KEY_VOLUNTEER){
                         Intent intent = new Intent(getApplicationContext(), QrCode.class);
@@ -158,13 +162,14 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
                     eventStatusService.checkSignUp();
                     eventStatusService.checkData();
-                   // dataLinking.linkData();
+                    dataLinking.linkData();
 
                     return true;
                 } else if (id == R.id.createEvent) {
+
                     eventStatusService.checkSignUp();
                     eventStatusService.checkData();
-                  //  dataLinking.linkData();
+                    dataLinking.linkData();
 
                     Intent intent = new Intent(getApplicationContext(), eventOrganiserAddPhoto.class);
                     startActivity(intent);
