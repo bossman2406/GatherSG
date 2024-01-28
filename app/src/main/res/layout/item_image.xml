@@ -63,6 +63,7 @@
                     android:weightSum="3">
 
                     <TextView
+                        android:id ="@+id/personalInfo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -78,11 +79,12 @@
                         android:background="#79D6D1D1" />
 
                     <TextView
+                        android:id = "@+id/editProfile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Personal Info"
+                        android:text="Edit Profile"
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -93,11 +95,12 @@
                         android:background="#79D6D1D1" />
 
                     <TextView
+                        android: = "@+id/blank"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Personal Info"
+                        android:text="blank"
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold" />

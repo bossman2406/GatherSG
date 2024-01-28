@@ -11,6 +11,8 @@ public class accountHelper {
     public static final String KEY_VOLUNTEER = "volunteer";
     public static final String KEY_ORGANISERS = "organisers";
     public static final String KEY_MYEVENTS = "myEvents";
+    public static final String KEY_DOB= "dob";
+    public static final String KEY_BIO = "bio";
     public static final String KEY_VIA = "via";
     public static String accountType;
     public static String accountUID;

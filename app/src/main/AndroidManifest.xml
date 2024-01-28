@@ -30,6 +30,9 @@
         android:theme="@style/Theme.User"
         tools:targetApi="31">
         <activity
+            android:name=".editProfile"
+            android:exported="false" />
+        <activity
             android:name=".splashscreen"
             android:exported="false" />
         <activity

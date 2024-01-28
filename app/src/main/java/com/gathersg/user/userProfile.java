@@ -63,6 +63,7 @@ public class userProfile extends Fragment {
                     if(snapshot.exists()){
                         String name = snapshot.getString(accountHelper.KEY_USERNAME);
                         username.setText(name);
+                        uidText.setText(uid);
                         Blob image = snapshot.getBlob(accountHelper.KEY_IMAGE);
                         if(image != null) {
                             byte[] imageData;
@@ -88,10 +89,6 @@ public class userProfile extends Fragment {
         }
         return view;
     }
-
-    public void onBackPressed() {
-        requireActivity().onBackPressed();
-    }
-
+    
 
 }
