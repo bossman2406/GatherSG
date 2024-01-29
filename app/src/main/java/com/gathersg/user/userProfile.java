@@ -1,5 +1,6 @@
 package com.gathersg.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
@@ -33,8 +35,9 @@ public class userProfile extends Fragment {
     personal_info personalInfo;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    TextView username,uidText;
+    TextView username,uidText,edit;
     CircleImageView imageView;
+    editProfile editProfile;
 
     public userProfile() {
         // Required empty public constructor
@@ -49,6 +52,15 @@ public class userProfile extends Fragment {
         username = view.findViewById(R.id.usernameProfile);
         uidText = view.findViewById(R.id.uidProfile);
         imageView = view.findViewById(R.id.profile_image);
+        edit = view.findViewById(R.id.editProfile);
+        editProfile = new editProfile();
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(),com.gathersg.user.editProfile.class);
+                startActivity(intent);
+            }
+        });
         //add db to get username , uid and image;
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();

@@ -18,6 +18,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,6 +26,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     private Toolbar toolbar;
     private EditText username, number;
     private FirebaseFirestore db;
+
+    CircularImageView profilePic;
     dataLinking dataLinking;
     eventStatusService eventStatusService;
 
@@ -197,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         navigationView = findViewById(R.id.navView);
         View view = navigationView.getHeaderView(0);
         usernameNav = view.findViewById(R.id.usernameNav);
+        profilePic = view.findViewById(R.id.profilePicture);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -226,7 +231,15 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                         // DocumentSnapshot contains the data
                         String data = document.getString(accountHelper.KEY_USERNAME);
                         if (usernameNav != null) {
-                            usernameNav.setText(data);
+                            usernameNav.setText("Welcome Back, " + data);
+                        }
+                        Blob image = document.getBlob(accountHelper.KEY_IMAGE);
+                        if(image != null) {
+                            byte[] imageData;
+                            imageData = image.toBytes();
+                            Glide.with(getApplicationContext())
+                                    .load(imageData)
+                                    .into(profilePic);
                         }
                         Log.d("FirestoreData", "DocumentSnapshot data: " + data);
                     } else {

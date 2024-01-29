@@ -1,6 +1,9 @@
 package com.gathersg.user;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +28,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,6 +97,25 @@ public class volunteerRegister extends Fragment {
                                 note.put(accountHelper.KEY_EMAIL, Email);
                                 note.put(accountHelper.KEY_PASSWORD, Password);
                                 note.put(accountHelper.KEY_VIA, 0.0 );
+                                note.put(accountHelper.KEY_DOB,null);
+                                note.put(accountHelper.KEY_NUMBER,null);
+                                note.put(accountHelper.KEY_BIO,null);
+                                Drawable drawable = getResources().getDrawable(R.drawable.default_icon);
+
+// Convert the Drawable to a Bitmap
+                                Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+
+// Convert the Bitmap to a byte array
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                byte[] imageData = baos.toByteArray();
+
+// Convert the byte array to a Blob
+                                com.google.firebase.firestore.Blob imageBlob = com.google.firebase.firestore.Blob.fromBytes(imageData);
+                                note.put(accountHelper.KEY_IMAGE,imageBlob);
+
+
+
 
 
                                 docRef.set(note)

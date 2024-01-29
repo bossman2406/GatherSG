@@ -137,22 +137,35 @@ public class editProfile extends AppCompatActivity {
 
         saveButton.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view){
-                if (isUsernameChanged() || isPasswordChanged() || isBioChanged() || isEmailChanged() || isNumberChanged() || isDOBChanged()){
-                    Map<String,Object> userData = new HashMap<>();
-                    userData.put(accountHelper.KEY_USERNAME,usernameUser);
-                    userData.put(accountHelper.KEY_PASSWORD,passwordUser);
-                    userData.put(accountHelper.KEY_NUMBER,numberUser);
-                    userData.put(accountHelper.KEY_EMAIL,emailUser);
-                    userData.put(accountHelper.KEY_BIO,bioUser);
-                    userData.put(accountHelper.KEY_DOB,dobUser);
-                    reference.update(userData);
-                    Toast.makeText(editProfile.this, "Saved", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(editProfile.this, "No Changes Found", Toast.LENGTH_SHORT).show();
+            public void onClick(View view) {
+                usernameUser = editUsername.getText().toString();
+                passwordUser = editPassword.getText().toString();
+                bioUser = editBio.getText().toString();
+                emailUser = editEmail.getText().toString();
+                numberUser = editNumber.getText().toString();
+                dobUser = editDOB.getText().toString();
+
+                Map<String, Object> userData = new HashMap<>();
+                userData.put(accountHelper.KEY_USERNAME, usernameUser);
+                userData.put(accountHelper.KEY_PASSWORD, passwordUser);
+                userData.put(accountHelper.KEY_NUMBER, numberUser);
+                userData.put(accountHelper.KEY_EMAIL, emailUser);
+                userData.put(accountHelper.KEY_BIO, bioUser);
+                userData.put(accountHelper.KEY_DOB, dobUser);
+                if (imageData != null) {
+                    Blob imageBlob = Blob.fromBytes(imageData);
+                    userData.put(accountHelper.KEY_IMAGE, imageBlob);
                 }
+                reference.update(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(editProfile.this, "Saved", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
             }
-                }
+        }
         );
 }
 
@@ -265,30 +278,37 @@ public class editProfile extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this, android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                 new DatePickerDialog.OnDateSetListener() {
-                    @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         Calendar selectedDate = Calendar.getInstance();
                         selectedDate.set(Calendar.YEAR, year);
                         selectedDate.set(Calendar.MONTH, month);
                         selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                        if (selectedDate.after(currentDate)) {
-                            // Selected date is in the future
+                        if (isDateValid(selectedDate)) {
+                            // Date is valid (at least 13 years before the current date)
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                             String formattedDate = dateFormat.format(selectedDate.getTime());
                             Toast.makeText(getApplicationContext(), "Selected Date: " + formattedDate, Toast.LENGTH_LONG).show();
                             editDOB.setText(formattedDate);
-
                         } else {
-                            // Selected date is not in the future
-                            Toast.makeText(getApplicationContext(), "Please select a future date.", Toast.LENGTH_LONG).show();
-
+                            // Date is not valid
+                            Toast.makeText(getApplicationContext(), "Please select a date at least 13 years ago.", Toast.LENGTH_LONG).show();
                         }
                     }
                 },
                 year, month, day);
         datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         datePickerDialog.show();
+    }
+    private boolean isDateValid(Calendar selectedDate) {
+        // Get the current date
+        Calendar currentDate = Calendar.getInstance();
+
+        // Set the minimum age to 13 years
+        currentDate.add(Calendar.YEAR, -13);
+
+        // Check if the selected date is at least 13 years before the current date
+        return selectedDate.before(currentDate);
     }
 
     @Override

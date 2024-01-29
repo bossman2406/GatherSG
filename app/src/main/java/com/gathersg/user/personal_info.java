@@ -72,24 +72,26 @@ public class personal_info extends Fragment {
         userData.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                userData.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            if (documentSnapshot.exists()) {
-                                String temp1 = documentSnapshot.getString(accountHelper.KEY_EMAIL);
-                                String temp2 = documentSnapshot.getString(accountHelper.KEY_NUMBER);
-                                String temp3 = documentSnapshot.getString(accountHelper.KEY_BIO);
-                                bio.setText(temp3);
-                                number.setText(temp2);
-                                email.setText(temp1);
-
-                            }
-                        }
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    // Access data directly from the documentSnapshot
+                    String temp1 = documentSnapshot.getString(accountHelper.KEY_EMAIL);
+                    String temp2 = documentSnapshot.getString(accountHelper.KEY_NUMBER);
+                    String temp3 = documentSnapshot.getString(accountHelper.KEY_BIO);
+                    if (temp1 != null) {
+                        email.setText(temp1);
                     }
-                });
+
+                    if (temp2 != null) {
+                        number.setText(temp2);
+                    }
+
+                    if (temp3 != null) {
+                        bio.setText(temp3);
+                    }
+
+                }
             }
         });
+
     }
 }
