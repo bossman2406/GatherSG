@@ -1,5 +1,6 @@
 package com.gathersg.user.login;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,9 +19,12 @@ import androidx.fragment.app.Fragment;
 import com.gathersg.user.mainpage.MainActivity;
 import com.gathersg.user.R;
 import com.gathersg.user.helpers.accountHelper;
+import com.gathersg.user.profile.editProfile;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -36,6 +41,8 @@ public class volunteerLogin extends Fragment {
 
     private EditText email, password;
     private Button login;
+    private TextView forgetPass;
+    Dialog dialog;
 
 
     public volunteerLogin() {
@@ -51,6 +58,50 @@ public class volunteerLogin extends Fragment {
         email = view.findViewById(R.id.emailLoginVolunteer);
         password = view.findViewById(R.id.passwordLoginVolunteer);
         login = view.findViewById(R.id.volunteerLogin);
+        forgetPass = view.findViewById(R.id.forgetPassword);
+        dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.forgetpassword);
+        forgetPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Button reset;
+                EditText email;
+                reset = dialog.findViewById(R.id.resetBtn);
+                email = dialog.findViewById(R.id.emailLogin);
+
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+
+// Assuming you have an EditText for email input named 'emailEditText'
+                String userEmail = email.getText().toString();
+                reset.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        auth.sendPasswordResetEmail(userEmail)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            // Password reset email sent successfully
+                                            // Provide user feedback, e.g., show a Toast
+                                            Toast.makeText(getContext(), "Password reset email sent", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            // Handle errors, e.g., show an error message
+                                            Toast.makeText(getContext(), "Failed to send password reset email", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                        Intent intent = new Intent(getContext(), Login.class);
+                        startActivity(intent);
+                    }
+                });
+                dialog.show();
+
+
+
+
+            }
+        });
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,4 +157,23 @@ public class volunteerLogin extends Fragment {
                 });
 
     }
+    private void changePassword(String newPassword) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.updatePassword(newPassword)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Password changed successfully
+                            // Provide user feedback, e.g., show a Toast
+                            Toast.makeText(getContext(), "Password changed successfully", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Handle password change failure
+                            Toast.makeText(getContext(), "Failed to change password", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
 }

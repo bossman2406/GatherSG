@@ -31,6 +31,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.gathersg.user.R;
 import com.gathersg.user.helpers.accountHelper;
+import com.gathersg.user.mainpage.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -82,9 +83,9 @@ public class editProfile extends AppCompatActivity {
         reference = db.collection(temp).document(uid);
 
         editUsername = findViewById(R.id.edit_username);
-        editPassword = findViewById(R.id.edit_password);
+
         editBio = findViewById(R.id.edit_bio);
-        editEmail = findViewById(R.id.edit_email);
+
         editNumber = findViewById(R.id.edit_number);
         editDOB = findViewById(R.id.edit_DOB);
         imageButton = findViewById(R.id.galleryBtn);
@@ -137,17 +138,17 @@ public class editProfile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 usernameUser = editUsername.getText().toString();
-                passwordUser = editPassword.getText().toString();
+
                 bioUser = editBio.getText().toString();
-                emailUser = editEmail.getText().toString();
+
                 numberUser = editNumber.getText().toString();
                 dobUser = editDOB.getText().toString();
 
                 Map<String, Object> userData = new HashMap<>();
                 userData.put(accountHelper.KEY_USERNAME, usernameUser);
-                userData.put(accountHelper.KEY_PASSWORD, passwordUser);
+
                 userData.put(accountHelper.KEY_NUMBER, numberUser);
-                userData.put(accountHelper.KEY_EMAIL, emailUser);
+
                 userData.put(accountHelper.KEY_BIO, bioUser);
                 userData.put(accountHelper.KEY_DOB, dobUser);
                 if (imageData != null) {
@@ -161,6 +162,9 @@ public class editProfile extends AppCompatActivity {
 
                     }
                 });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
 
             }
         }
@@ -177,14 +181,7 @@ public class editProfile extends AppCompatActivity {
         }
     }
 
-    public boolean isPasswordChanged(){
-        if (!passwordUser.equals(editPassword.getText().toString())){
-            passwordUser = editPassword.getText().toString();
-            return true;
-        }else{
-            return false;
-        }
-    }
+
 
     public boolean isBioChanged(){
         if (!bioUser.equals(editBio.getText().toString())){
@@ -195,14 +192,7 @@ public class editProfile extends AppCompatActivity {
         }
     }
 
-    public boolean isEmailChanged(){
-        if (!emailUser.equals(editEmail.getText().toString())){
-            emailUser = editEmail.getText().toString();
-            return true;
-        }else{
-            return false;
-        }
-    }
+
 
     public boolean isNumberChanged(){
         if (!numberUser.equals(editNumber.getText().toString())){
@@ -238,20 +228,20 @@ public class editProfile extends AppCompatActivity {
                                 DocumentSnapshot documentSnapshot = task.getResult();
                                 if (documentSnapshot.exists()) {
                                     usernameUser = documentSnapshot.getString(accountHelper.KEY_USERNAME);
-                                    passwordUser = documentSnapshot.getString(accountHelper.KEY_PASSWORD);
+
                                     dobUser = documentSnapshot.getString(accountHelper.KEY_DOB);
                                     numberUser  = documentSnapshot.getString(accountHelper.KEY_NUMBER);
-                                    emailUser = documentSnapshot.getString(accountHelper.KEY_EMAIL);
+
                                     bioUser = documentSnapshot.getString(accountHelper.KEY_BIO);
                                     imageUser = documentSnapshot.getBlob(accountHelper.KEY_IMAGE);
 
                                     editDOB.setText(dobUser);
                                     editUsername.setText(usernameUser);
-                                    editPassword.setText(passwordUser);
+
 
                                     editBio.setText(bioUser);
                                     editNumber.setText(numberUser);
-                                    editEmail.setText(emailUser);
+
                                     if(imageUser != null) {
                                         byte[] imageData;
                                         imageData = imageUser.toBytes();

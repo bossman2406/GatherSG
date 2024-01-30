@@ -73,25 +73,6 @@
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/edit_passwordTitle"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:text="Edit Password:"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/edit_password"
-        android:layout_width="350dp"
-        android:layout_height="40dp"
-        android:ems="10"
-        android:hint="Enter new password"
-        android:inputType="text"
-        android:textColor="@color/black"
-        android:textSize="15sp" />
-
-    <TextView
         android:id="@+id/edit_bioTitle"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
@@ -108,25 +89,6 @@
         android:hint="Enter new bio"
         android:inputType="text"
         android:textColor="@color/black"
-        android:textSize="15sp" />
-
-    <TextView
-        android:id="@+id/edit_emailTitle"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:text="Edit Email:"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/edit_email"
-        android:layout_width="350dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="0dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Enter new email"
         android:textSize="15sp" />
 
     <TextView
@@ -155,13 +117,16 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
+   
+        <EditText
+            android:id="@+id/edit_DOB"
+            android:layout_width="350dp"
+            android:layout_height="40dp"
+            android:text="Enter Date of Birth"
+            android:textSize="15sp" />
+    
 
-    <TextView
-        android:id="@+id/edit_DOB"
-        android:layout_width="350dp"
-        android:layout_height="40dp"
-        android:text="Enter Date of Birth"
-        android:textSize="15sp" />
+    
 
     <Button
         android:id="@+id/save_button"
