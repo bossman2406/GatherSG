@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="start"
     android:orientation="vertical"
-    tools:context=".MainActivity"
+    tools:context=".mainpage.MainActivity"
     android:theme="@style/Theme.User"
     tools:ignore="all">
 

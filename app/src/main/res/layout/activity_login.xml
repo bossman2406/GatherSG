@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="#FFFFFF"
-    tools:context=".Login">
+    tools:context=".login.Login">
 
     <include
         android:id="@+id/include2"

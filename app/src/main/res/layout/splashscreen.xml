@@ -6,7 +6,8 @@
     android:background="@color/orange"
     android:backgroundTint="@color/orange">
 
-    <ImageView
+    <VideoView
+
         android:id="@+id/splashimage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
