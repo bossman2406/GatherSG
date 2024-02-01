@@ -46,6 +46,7 @@ public class attendance extends AppCompatActivity {
     FirebaseFirestore db =FirebaseFirestore.getInstance();
     FirebaseAuth auth= FirebaseAuth.getInstance();
     FirebaseUser currentUser = auth.getCurrentUser();
+    Long viaHours;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,6 +127,7 @@ public class attendance extends AppCompatActivity {
             for (DocumentSnapshot document : queryDocumentSnapshots) {
                 // Extract data from the document
                 String eventName = document.getString(eventHelper.KEY_EVENTNAME);
+                viaHours = document.getLong(eventHelper.KEY_VIA);
 
                 // Log the data for debugging
                 Log.d("My_TAG", eventName);
@@ -181,7 +183,7 @@ public class attendance extends AppCompatActivity {
 
                                                                 DocumentReference viaRef = db.collection(accountHelper.KEY_VOLUNTEER).document(uidAttendance);
 
-                                                                long newCount = (via != null) ? via + 1 : 1;
+                                                                long newCount = (via != null) ? via + viaHours  : 0;
 
                                                                 Map<String, Object> temp = new HashMap<>();
                                                                 temp.put(accountHelper.KEY_VIA, newCount);

@@ -23,18 +23,45 @@
             android:textColor="@color/orange"
             android:textSize="30sp"
             android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/autoCompleteEvent"
-            style="@android:style/Widget.Material.DropDownItem"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="350dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="5dp"
+            app:strokeColor="@color/orange"
+            app:strokeWidth="3dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:textSize = "20dp"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/white"
-            android:spinnerMode="dropdown" />
+           >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text = "Select Event"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:textColor="@color/orange"
+                    android:textSize="20sp"
+                    />
+                <Spinner
+                    android:id="@+id/autoCompleteEvent"
+                    style="@android:style/Widget.Material.DropDownItem"
+                    android:layout_width="350dp"
+                    android:layout_height="40dp"
+
+                    android:textSize = "30dp"
+                    android:backgroundTint="@color/white"
+                    android:spinnerMode="dropdown"
+
+                    />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
 
 
 

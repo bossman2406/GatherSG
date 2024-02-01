@@ -38,8 +38,10 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
     private final ArrayList<Double> latList;
     private final ArrayList<Double> lonList;
     private final ArrayList<Blob> imageList;
-    FirebaseAuth auth;
-    FirebaseFirestore db;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseFirestore  db = FirebaseFirestore.getInstance();
+      // Initialize FirebaseAuth instance
+     // Initialize FirebaseFirestore instance
 
     public myEventsVolAdapter(Context context, ArrayList<String> nameList, ArrayList<String> descList,
                               ArrayList<String> dateList, ArrayList<String> orgList,
@@ -61,6 +63,7 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
         logArrayList("orgList", orgList);
         logArrayList("dateList", dateList);
         logImageArrayList("imageList", imageList);
+
     }
 
     private void logArrayList(String name, ArrayList<String> list) {
@@ -107,6 +110,7 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
                     .load(imageData)
                     .into(holder.image);
         }
+        holder.bindData(position);
     }
 
     @Override
@@ -126,27 +130,35 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
             date = v.findViewById(R.id.myEventCardDate);
             status = v.findViewById(R.id.myEventCardStatus);
             image = v.findViewById(R.id.myEventCardImage);
+            auth = FirebaseAuth.getInstance();  // Initialize FirebaseAuth instance
+            db = FirebaseFirestore.getInstance();  // Initialize FirebaseFirestore instance
+        }
 
-            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition())).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            String eventStatus = document.getString(eventHelper.KEY_EVENTSTATUS);
-                            String signUpStatus = document.getString(eventHelper.KEY_SIGNUPSTATUS);
-                            Map<String,Object> temp = new HashMap<>();
-                            temp.put(eventHelper.KEY_SIGNUPSTATUS,signUpStatus);
-                            temp.put(eventHelper.KEY_EVENTSTATUS,eventStatus);
-                            db.collection(accountHelper.KEY_VOLUNTEER).document(auth.getUid()).collection(accountHelper.KEY_MYEVENTS).document(nameList.get(getAdapterPosition())).update(temp);
-
+            public void bindData(int position) {
+                db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                String eventStatus = document.getString(eventHelper.KEY_EVENTSTATUS);
+                                String signUpStatus = document.getString(eventHelper.KEY_SIGNUPSTATUS);
+                                Map<String, Object> temp = new HashMap<>();
+                                temp.put(eventHelper.KEY_SIGNUPSTATUS, signUpStatus);
+                                temp.put(eventHelper.KEY_EVENTSTATUS, eventStatus);
+                                db.collection(accountHelper.KEY_VOLUNTEER)
+                                        .document(auth.getUid())
+                                        .collection(accountHelper.KEY_MYEVENTS)
+                                        .document(nameList.get(position))
+                                        .update(temp);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
 
             // need change layout
-        }
+
     }
 
 }

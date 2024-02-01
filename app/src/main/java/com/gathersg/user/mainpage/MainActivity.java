@@ -27,6 +27,7 @@ import com.gathersg.user.calendar.calendar;
 import com.gathersg.user.events.allEvents;
 import com.gathersg.user.helpers.accountHelper;
 import com.gathersg.user.login.Login;
+import com.gathersg.user.myPhotos.myPhotos;
 import com.gathersg.user.myevents.weeklyCalendarOrg;
 import com.gathersg.user.myevents.weeklyCalendarVol;
 import com.gathersg.user.profile.userProfile;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     private com.gathersg.user.events.allEvents allEvents;
     private com.gathersg.user.myevents.weeklyCalendarOrg weeklyCalendarOrg;
     private com.gathersg.user.myevents.weeklyCalendarVol weeklyCalendarVol;
+    private com.gathersg.user.myPhotos.myPhotos myPhotos;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         weeklyCalendarVol = new weeklyCalendarVol();
         weeklyCalendarOrg = new weeklyCalendarOrg();
         allEvents = new allEvents();
+        myPhotos = new myPhotos();
 
 
         bottomNav = findViewById(R.id.bottomNav);
@@ -184,6 +187,11 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     eventStatusService.checkSignUp();
                     eventStatusService.checkData();
                     dataLinking.linkData();
+                    fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, myPhotos)
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
+                            .commit();
+
 
                     return true;
                 } else if (id == R.id.createEvent) {

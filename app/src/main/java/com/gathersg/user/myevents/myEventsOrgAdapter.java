@@ -70,6 +70,9 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
         logArrayList("orgList", orgList);
         logArrayList("dateList", dateList);
         logImageArrayList("imageList", imageList);
+
+
+
     }
 
     private void logArrayList(String name, ArrayList<String> list) {
@@ -112,6 +115,8 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
         holder.number.setText((signUpList.get(position)).toString());
 
         Blob temp = imageList.get(position);
+
+
         // need change layout
 
         if (temp != null) {
@@ -146,6 +151,7 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
             image = v.findViewById(R.id.eventCardImage);
             number = v.findViewById(R.id.myEventOrgSignUp);
             closeSignUpButton = v.findViewById(R.id.closeSignUpButton);
+
             closeSignUpButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -181,11 +187,23 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
 
 
 
-
-
         }
 
         protected void cancelEvent() {
+            Map<String, Object> signUp = new HashMap<>();
+            signUp.put(eventHelper.KEY_EVENTSTATUS,eventHelper.KEY_CANCELLED);
+            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition())).update(signUp).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Toast.makeText(context.getApplicationContext(),"Sign Up Closed",Toast.LENGTH_SHORT).show();
+                    db.collection(accountHelper.KEY_ORGANISERS).document(auth.getUid()).collection(accountHelper.KEY_MYEVENTS).document(nameList.get(getAdapterPosition())).update(signUp);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
 
 
         }

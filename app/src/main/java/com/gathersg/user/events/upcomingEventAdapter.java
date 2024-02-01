@@ -104,6 +104,7 @@ public class upcomingEventAdapter extends RecyclerView.Adapter<upcomingEventAdap
                     .load(imageData)
                     .into(holder.image);
         }
+        holder.shouldHideSignUpButton(position);
     }
 
     @Override
@@ -137,6 +138,7 @@ public class upcomingEventAdapter extends RecyclerView.Adapter<upcomingEventAdap
             FirebaseUser currentUser = auth.getCurrentUser();
             String uid = currentUser.getUid();
 
+
             volunteerSignUp.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -147,37 +149,70 @@ public class upcomingEventAdapter extends RecyclerView.Adapter<upcomingEventAdap
                 }
             });
 
-            // Move the Firestore query here
-            int position  = getAdapterPosition();
-            if(position!= RecyclerView.NO_POSITION){
-                db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            int position = getAdapterPosition();
+//            if (position != RecyclerView.NO_POSITION) {
+//                db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            Log.d("YourTag","task is successful");
+//                            DocumentSnapshot temp1 = task.getResult();
+//                            if (temp1.exists()) {
+//
+//                                String eventStatus = temp1.getString(eventHelper.KEY_EVENTSTATUS);
+//                                String signUpStatus = temp1.getString(eventHelper.KEY_SIGNUPSTATUS);
+//                                Log.d("YourTag",eventStatus + signUpStatus + accountHelper.accountType);
+//
+//                                if (signUpStatus.equals(eventHelper.KEY_CLOSE) || eventStatus.equals(eventHelper.KEY_CANCELLED) || eventStatus.equals(eventHelper.KEY_EVENTCONCLUDED) || accountHelper.accountType.equals(accountHelper.KEY_ORGANISERS)) {
+//                                    // Set the visibility of volunteerSignUp to GONE
+//                                    volunteerSignUp.setVisibility(View.GONE);
+//                                } else {
+//                                    // Set the visibility of volunteerSignUp to VISIBLE
+//                                    volunteerSignUp.setVisibility(View.VISIBLE);
+//                                }
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+
+        }
+        private void shouldHideSignUpButton ( int position){
+            if (position != RecyclerView.NO_POSITION) {
+                // Assuming you have a method to check conditions and return a boolean
+                Log.d("MAKE", "if started");
+
+                db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition())).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            DocumentSnapshot temp1 = task.getResult();
-                            if (temp1.exists()) {
-                                String eventStatus = temp1.getString(eventHelper.KEY_EVENTSTATUS);
-                                String signUpStatus = temp1.getString(eventHelper.KEY_SIGNUPSTATUS);
-                                if (signUpStatus.equals(eventHelper.KEY_CLOSE) || eventStatus.equals(eventHelper.KEY_CANCELLED)) {
+                            DocumentSnapshot docRef = task.getResult();
+                            Log.d("MAKE", "task successsful");
+                            if (docRef.exists()) {
+                                boolean shouldHide = docRef.getString(eventHelper.KEY_SIGNUPSTATUS).equals(eventHelper.KEY_CLOSE) ||
+                                        docRef.getString(eventHelper.KEY_EVENTSTATUS).equals(eventHelper.KEY_EVENTCONCLUDED) ||
+                                        docRef.getString(eventHelper.KEY_EVENTSTATUS).equals(eventHelper.KEY_CANCELLED);
+                                if (accountHelper.accountType.equals(accountHelper.KEY_ORGANISERS)|| shouldHide ) {
                                     volunteerSignUp.setVisibility(View.GONE);
-                                } else {
-                                    // The volunteerSignUp button is already set up in the OnClickListener
                                 }
+
                             }
                         }
+
                     }
                 });
-            }
-
-
-
-
-
-
-                    }
 
 
             }
+        }
+
+
+
+
+
+
+        }
+
         }
 
 

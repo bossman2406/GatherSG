@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,6 @@ public class volunteerLogin extends Fragment {
         forgetPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Button reset;
                 EditText email;
                 reset = dialog.findViewById(R.id.resetBtn);
@@ -72,11 +72,19 @@ public class volunteerLogin extends Fragment {
 
                 FirebaseAuth auth = FirebaseAuth.getInstance();
 
-// Assuming you have an EditText for email input named 'emailEditText'
-                String userEmail = email.getText().toString();
                 reset.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // Assuming you have an EditText for email input named 'emailEditText'
+                        String userEmail = email.getText().toString().trim();
+
+                        // Validate email format
+                        if (TextUtils.isEmpty(userEmail) || !Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
+                            // Email is empty or not in a valid format
+                            Toast.makeText(getContext(), "Invalid email address", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         auth.sendPasswordResetEmail(userEmail)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -91,17 +99,16 @@ public class volunteerLogin extends Fragment {
                                         }
                                     }
                                 });
+
                         Intent intent = new Intent(getContext(), Login.class);
                         startActivity(intent);
                     }
                 });
+
                 dialog.show();
-
-
-
-
             }
         });
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

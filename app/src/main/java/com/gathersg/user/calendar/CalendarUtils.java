@@ -9,10 +9,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class CalendarUtils {
-    public static LocalDate selectedDate = LocalDate.now();
+    public static LocalDate selectedDate;
 
     public static String formattedDate(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return date.format(formatter);
     }
 

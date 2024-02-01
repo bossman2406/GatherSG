@@ -30,6 +30,14 @@
         android:theme="@style/Theme.User"
         tools:targetApi="31">
         <activity
+            android:name=".myPhotos.myPhotoAdd"
+            android:exported="false" />
+        <activity android:name=".myPhotos.myPhotoAddPhoto"
+            android:exported="false"/>
+        <activity
+            android:name=".myPhotos.myPhotos"
+            android:exported="false" />
+        <activity
             android:name=".profile.editProfile"
             android:exported="false" />
         <activity
@@ -66,9 +74,7 @@
             android:exported="false" />
         <activity
             android:name=".login.Login"
-            android:exported="false">
-
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".mainpage.MainActivity"
             android:exported="false"

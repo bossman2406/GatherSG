@@ -17,6 +17,7 @@ public class accountHelper {
     public static final String KEY_EVENTATTENDED = "eventAttended";
     public static String accountType;
     public static String accountUID;
+    public static final String KEY_MYPHOTOS = "myPhotos";
 
 
     public accountHelper() {

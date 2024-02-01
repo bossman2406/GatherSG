@@ -2,6 +2,8 @@ package com.gathersg.user.myevents;
 
 import static com.gathersg.user.calendar.CalendarUtils.daysInWeekArray;
 import static com.gathersg.user.calendar.CalendarUtils.monthYearFromDate;
+import static com.gathersg.user.calendar.CalendarUtils.selectedDate;
+import static com.gathersg.user.calendar.dateCompare.parseDateString;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -67,7 +69,6 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
 
         dataLinking = new dataLinking();
         dataLinking.linkData();
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_weekly_calendar, container, false);
         calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView);
@@ -144,6 +145,11 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
                     // Log the data for debugging
                     Log.d("My_TAG", eventName + eventDesc + date + organiser + locName + lat + lon + image);
 
+
+//                    if(date.equals(parseDateString(sel))){
+//
+//                    }
+
                     // Add data to lists
                     nameList.add(eventName);
                     descList.add(eventDesc);
@@ -202,5 +208,6 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
     public void onItemClick(int position, LocalDate date) {
         CalendarUtils.selectedDate = date;
         setWeekView();
+        myEventsVolAdapter.notifyDataSetChanged();
     }
 }

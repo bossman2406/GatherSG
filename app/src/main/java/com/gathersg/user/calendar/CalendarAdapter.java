@@ -1,6 +1,5 @@
 package com.gathersg.user.calendar;
 
-
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +44,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
         else {
             holder.dayOfMonth.setText(String.valueOf(date.getDayOfMonth()));
             if (date.equals(CalendarUtils.selectedDate))
-                holder.parentView.setBackgroundColor(Color.YELLOW);
+                holder.parentView.setBackgroundColor(Color.LTGRAY);
+            else
+                holder.parentView.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
@@ -56,6 +57,11 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
 
     public interface OnItemListener {
         void onItemClick(int position, LocalDate date);
+    }
 
+    // Method to update the selected date and refresh the RecyclerView
+    public void updateSelectedDate(LocalDate newSelectedDate) {
+        CalendarUtils.selectedDate = newSelectedDate;
+        notifyDataSetChanged();
     }
 }

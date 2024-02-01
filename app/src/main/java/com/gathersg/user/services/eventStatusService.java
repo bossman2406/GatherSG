@@ -68,13 +68,15 @@ public class eventStatusService {
                             if (inputDate != null) {
                                 Date currentDate = new Date();
                                 // Compare the two dates
-                                int comparisonResult = currentDate.compareTo(inputDate);
+                                Log.d("TAGGG", inputDate  + "   "  +currentDate);
+                                int comparisonResult = inputDate.compareTo(currentDate);
+                                Log.d("TAGGG", String.valueOf(comparisonResult));
                                 DocumentReference eventStatus = db.collection(eventHelper.KEY_EVENTS).document(name);
 
                                 DocumentReference myEventStatus = db.collection(accountType).document(uid).collection(accountHelper.KEY_MYEVENTS).document(name);
 
                                 Map<String, Object> myEvents = new HashMap<>();
-                                if (comparisonResult > 1) {
+                                if (comparisonResult > 0) {
                                     myEvents.put(eventHelper.KEY_EVENTSTATUS, eventHelper.KEY_EVENTUPCOMING);
                                     Log.d("DATE", "Input date is in the future.");
                                 } else {
@@ -82,7 +84,6 @@ public class eventStatusService {
                                     Log.d("DATE", "Input date is in the past.");
                                 }
                                 myEventStatus.update(eventHelper.KEY_EVENTSTATUS, myEvents.get(eventHelper.KEY_EVENTSTATUS));
-
                                 eventStatus.update(eventHelper.KEY_EVENTSTATUS, myEvents.get(eventHelper.KEY_EVENTSTATUS));
                                 checkSignUp();
 
@@ -183,7 +184,7 @@ public class eventStatusService {
                     if (userDocument.exists()) {
                         String username = userDocument.getString(accountHelper.KEY_USERNAME);
                         String email = userDocument.getString(accountHelper.KEY_EMAIL);
-                        Long number = userDocument.getLong(accountHelper.KEY_NUMBER);
+                        String number = userDocument.getString(accountHelper.KEY_NUMBER);
 
                         DocumentReference eventRef = db.collection(eventHelper.KEY_EVENTS).document(eventName);
                         eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
