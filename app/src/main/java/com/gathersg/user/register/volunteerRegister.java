@@ -1,5 +1,6 @@
 package com.gathersg.user.register;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -46,6 +49,9 @@ public class volunteerRegister extends Fragment {
     Button register;
     accountHelper helper;
 
+    CheckBox checkBox;
+    Boolean check = false;
+
     public volunteerRegister() {
     }
 
@@ -57,6 +63,26 @@ public class volunteerRegister extends Fragment {
         email = view.findViewById(R.id.emailRegisterVolunteer);
         password = view.findViewById(R.id.passwordRegisterVolunteer);
         register = view.findViewById(R.id.volunteerRegister);
+        checkBox = view.findViewById(R.id.checkBoxTerms);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                   check = true;
+                }
+                else {
+                    check = false;
+                }
+            }
+        });
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dialog = new Dialog(getContext());
+                dialog.setContentView(R.layout.terms_and_conditions);
+                dialog.show();
+            }
+        });
         mAuth = FirebaseAuth.getInstance();
         helper = new accountHelper();
 
@@ -78,6 +104,10 @@ public class volunteerRegister extends Fragment {
 
         if (TextUtils.isEmpty(Name) || TextUtils.isEmpty(Email) || TextUtils.isEmpty(Password)) {
             Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (check.equals(false)){
+            Toast.makeText(getContext(), "Accept Terms and Conditions", Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     private com.gathersg.user.myevents.weeklyCalendarVol weeklyCalendarVol;
     private com.gathersg.user.myPhotos.myPhotos myPhotos;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    private com.gathersg.user.mainpage.aboutFragment aboutFragment;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         FirebaseUser currentUser = auth.getCurrentUser();
         String uid = currentUser.getUid();
+        CalendarUtils.selectedDate = LocalDate.now();
 
 
 
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         weeklyCalendarOrg = new weeklyCalendarOrg();
         allEvents = new allEvents();
         myPhotos = new myPhotos();
+        aboutFragment = new aboutFragment();
 
 
         bottomNav = findViewById(R.id.bottomNav);
@@ -243,6 +246,12 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     finish();
 
                 }
+                if(id == R.id.aboutNav){
+                    fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer,aboutFragment )
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
+                            .commit();
+                }
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
@@ -310,6 +319,13 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     public void onItemClick(int position, LocalDate date) {
         if (date != null) {
             CalendarUtils.selectedDate = date;
+            if (accountHelper.accountType == accountHelper.KEY_ORGANISERS){
+                weeklyCalendarOrg.setWeekView();
+        }
+            if(accountHelper.accountType == accountHelper.KEY_VOLUNTEER){
+                weeklyCalendarVol.setWeekView();
+            }
+
         }
     }
 

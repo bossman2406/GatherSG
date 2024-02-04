@@ -48,9 +48,7 @@ public class CalendarUtils {
                 else
                     daysInMonthArray.add(LocalDate.of(selectedDate.getYear(), selectedDate.getMonth(), i - dayOfWeek));
             }
-        } else {
         }
-
         return daysInMonthArray;
     }
 

@@ -2,6 +2,7 @@ package com.gathersg.user.myevents;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.gathersg.user.R;
+import com.gathersg.user.calendar.calendar;
 import com.gathersg.user.helpers.accountHelper;
 import com.gathersg.user.helpers.eventHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -130,11 +132,14 @@ public class myEventsVolAdapter extends RecyclerView.Adapter<myEventsVolAdapter.
             date = v.findViewById(R.id.myEventCardDate);
             status = v.findViewById(R.id.myEventCardStatus);
             image = v.findViewById(R.id.myEventCardImage);
+
+
             auth = FirebaseAuth.getInstance();  // Initialize FirebaseAuth instance
             db = FirebaseFirestore.getInstance();  // Initialize FirebaseFirestore instance
         }
 
-            public void bindData(int position) {
+
+        public void bindData(int position) {
                 db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {

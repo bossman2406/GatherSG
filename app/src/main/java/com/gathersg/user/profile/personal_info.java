@@ -23,7 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 public class personal_info extends Fragment {
 
-    TextView bio,email,number;
+    TextView bio,email,number,via;
     FirebaseFirestore db;
     FirebaseAuth auth;
 
@@ -42,6 +42,7 @@ public class personal_info extends Fragment {
        bio = view.findViewById(R.id.bioAccount);
        number = view.findViewById(R.id.numberAccount);
        email= view.findViewById(R.id.emailAccount);
+       via = view.findViewById(R.id.viaAccount);
        FirebaseFirestore.getInstance();
        FirebaseAuth.getInstance();
        showUserData(view);
@@ -64,6 +65,7 @@ public class personal_info extends Fragment {
                     String temp1 = documentSnapshot.getString(accountHelper.KEY_EMAIL);
                     String temp2 = documentSnapshot.getString(accountHelper.KEY_NUMBER);
                     String temp3 = documentSnapshot.getString(accountHelper.KEY_BIO);
+                    Long temp4 = documentSnapshot.getLong(accountHelper.KEY_VIA);
                     if (temp1 != null) {
                         email.setText(temp1);
                     }
@@ -74,6 +76,9 @@ public class personal_info extends Fragment {
 
                     if (temp3 != null) {
                         bio.setText(temp3);
+                    }
+                    if (temp4 !=null){
+                        via.setText(String.valueOf(temp4));
                     }
 
                 }

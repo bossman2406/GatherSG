@@ -1,5 +1,6 @@
 package com.gathersg.user.register;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -44,6 +47,8 @@ public class organiserRegister extends Fragment {
     EditText password, uen, name, email;
     Button register;
     accountHelper helper;
+    CheckBox checkBox;
+    Boolean check;
 
     public organiserRegister() {
     }
@@ -69,6 +74,26 @@ public class organiserRegister extends Fragment {
                 );
             }
         });
+        checkBox = view.findViewById(R.id.checkBoxTerms);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    check = true;
+                }
+                else {
+                    check = false;
+                }
+            }
+        });
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dialog = new Dialog(getContext());
+                dialog.setContentView(R.layout.terms_and_conditions);
+                dialog.show();
+            }
+        });
         // Inflate the layout for this fragment
         return view;
     }
@@ -88,6 +113,10 @@ public class organiserRegister extends Fragment {
         }
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(getContext(), "Enter Organisation Name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (check.equals(false)){
+            Toast.makeText(getContext(), "Accept Terms and Conditions", Toast.LENGTH_SHORT).show();
             return;
         }
         mAuth.createUserWithEmailAndPassword(email, password)

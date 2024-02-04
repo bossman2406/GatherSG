@@ -2,6 +2,8 @@ package com.gathersg.user.myevents;
 
 import static com.gathersg.user.calendar.CalendarUtils.daysInWeekArray;
 import static com.gathersg.user.calendar.CalendarUtils.monthYearFromDate;
+import static com.gathersg.user.calendar.CalendarUtils.selectedDate;
+import static com.gathersg.user.calendar.dateCompare.parseDateStringToLocalDate;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -114,116 +116,12 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
         statusList = new ArrayList<>();
         signUpList = new ArrayList<>();
 
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-        String uid = currentUser.getUid();
-        String temp = accountHelper.accountType;
 
-
-        CollectionReference eventsCollection = db.collection(temp).document(uid).collection(accountHelper.KEY_MYEVENTS);
-        eventsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.e("Firestore", "Error fetching documents", e);
-                    return;
-                }
-
-                // Clear lists to avoid duplicates
-                nameList.clear();
-                descList.clear();
-                locNameList.clear();
-                dateList.clear();
-                orgList.clear();
-                latList.clear();
-                lonList.clear();
-                imageList.clear();
-                eventHelpers.clear();
-                signUpList.clear();
-
-                for (DocumentSnapshot document : queryDocumentSnapshots) {
-                    // Extract data from the document
-                    String eventName = document.getString(eventHelper.KEY_EVENTNAME);
-                    String eventDesc = document.getString(eventHelper.KEY_EVENTDESC);
-                    String date = document.getString(eventHelper.KEY_EVENTDATE);
-                    String organiser = document.getString(eventHelper.KEY_EVENTORG);
-                    String locName = document.getString(eventHelper.KEY_EVENTLOCNAME);
-                    Double lat = document.getDouble(eventHelper.KEY_LAT);
-                    Double lon = document.getDouble(eventHelper.KEY_LON);
-                    Blob image = document.getBlob(eventHelper.KEY_EVENTIMAGE);
-                    String status = document.getString(eventHelper.KEY_EVENTSTATUS);
-
-
-                    DocumentReference signUpDocument = db.collection(eventHelper.KEY_EVENTS).document(eventName);
-                    signUpDocument.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            DocumentSnapshot userSignupDocument = task.getResult();
-                            Long temp = userSignupDocument.getLong(eventHelper.KEY_EVENTSIGNUP);
-                            DocumentReference tempRef = db.collection(accountHelper.KEY_ORGANISERS).document(uid).collection(accountHelper.KEY_MYEVENTS).document(eventName);
-                            Map<String, Object> eventSignUp = new HashMap<>();
-                            eventSignUp.put(eventHelper.KEY_EVENTSIGNUP, temp);
-                            tempRef.update(eventSignUp).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Log.d("SIGN UP", "ADDED TO ORGANISER MY EVENTS");
-                                }
-                            });
-                        }
-                    });
-
-
-                    Long pax = document.getLong(eventHelper.KEY_EVENTSIGNUP);
-
-                    // Log the data for debugging
-                    Log.d("My_TAG", eventName + eventDesc + date + organiser + locName + lat + lon + image + status + pax);
-
-                    // Add data to lists
-                    nameList.add(eventName);
-                    descList.add(eventDesc);
-                    locNameList.add(locName);
-                    dateList.add(date);
-                    orgList.add(organiser);
-                    latList.add(lat);
-                    lonList.add(lon);
-                    imageList.add(image);
-                    statusList.add(status);
-                    signUpList.add(pax);
-
-                    // Create an eventHelper object and add it to the list
-                    eventHelper helper = new eventHelper();
-                    helper.uploadmyOrgEvents(eventName, eventDesc, date, organiser, locName, lat, lon, image, status, pax);
-                    eventHelpers.add(helper);
-                }
-                myEventsOrgAdapter = new myEventsOrgAdapter(getContext(), nameList, descList, dateList, orgList, locNameList, latList, lonList, imageList, statusList, signUpList);
-                recyclerView.setAdapter(myEventsOrgAdapter);
-
-                new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-                    @Override
-                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                        return false;
-                    }
-
-                    @Override
-                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                        myEventsOrgAdapter.deleteEvent(viewHolder.getAdapterPosition());
-                        myEventsOrgAdapter.notifyDataSetChanged();
-
-                    }
-                }).attachToRecyclerView(recyclerView);
-
-                // Update the RecyclerView with the new data
-                if (myEventsOrgAdapter != null) {
-                    myEventsOrgAdapter.notifyDataSetChanged(); // Notify adapter of data change
-                }// Notify adapter of data change
-            }
-        });
 
         return view;
     }
 
-    private void setWeekView() {
+    public void setWeekView() {
         monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
         ArrayList<LocalDate> days = daysInWeekArray(CalendarUtils.selectedDate);
 
@@ -249,5 +147,105 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
     public void onItemClick(int position, LocalDate date) {
         CalendarUtils.selectedDate = date;
         setWeekView();
+    }
+    private void setEvent()
+
+    {
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        String uid = currentUser.getUid();
+        String temp = accountHelper.accountType;
+        CollectionReference eventsCollection = db.collection(temp).document(uid).collection(accountHelper.KEY_MYEVENTS);
+        eventsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("Firestore", "Error fetching documents", e);
+                    return;
+                }
+
+                // Clear lists to avoid duplicates
+                nameList.clear();
+                descList.clear();
+                locNameList.clear();
+                dateList.clear();
+                orgList.clear();
+                latList.clear();
+                lonList.clear();
+                imageList.clear();
+                eventHelpers.clear();
+
+                for (DocumentSnapshot document : queryDocumentSnapshots) {
+                    // Extract data from the document
+                    String eventName = document.getString(eventHelper.KEY_EVENTNAME);
+                    String eventDesc = document.getString(eventHelper.KEY_EVENTDESC);
+                    String date = document.getString(eventHelper.KEY_EVENTDATE);
+                    String organiser = document.getString(eventHelper.KEY_EVENTORG);
+                    String locName = document.getString(eventHelper.KEY_EVENTLOCNAME);
+                    Double lat = document.getDouble(eventHelper.KEY_LAT);
+                    Double lon = document.getDouble(eventHelper.KEY_LON);
+                    Blob image = document.getBlob(eventHelper.KEY_EVENTIMAGE);
+                    String status = document.getString(eventHelper.KEY_EVENTSTATUS);
+
+                    // Log the data for debugging
+                    Log.d("My_TAG", eventName + eventDesc + date + organiser + locName + lat + lon + image);
+
+
+//                    if(date.equals(parseDateString(sel))){
+//
+//                    }
+
+                    // Add data to list
+
+
+
+                    if(parseDateStringToLocalDate(date).equals(selectedDate)){
+
+                        Log.d( "Date Tag ", date + " date is equal");
+                        Log.d("Date Tag", "Parsed Date: " + parseDateStringToLocalDate(date));
+                        Log.d("Date Tag", "Selected Date: " + selectedDate);
+                        nameList.add(eventName);
+                        descList.add(eventDesc);
+                        locNameList.add(locName);
+                        dateList.add(date);
+                        orgList.add(organiser);
+                        latList.add(lat);
+                        lonList.add(lon);
+                        imageList.add(image);
+                        statusList.add(status);
+
+                        eventHelper helper = new eventHelper();
+                        helper.uploadmyEvents(eventName, eventDesc, date, organiser, locName, lat, lon, image, status);
+                        eventHelpers.add(helper);
+
+                    }
+
+                    // Create an eventHelper object and add it to the list
+
+                }
+                myEventsOrgAdapter = new myEventsOrgAdapter(getContext(), nameList, descList, dateList, orgList, locNameList, latList, lonList, imageList, statusList, signUpList);
+                recyclerView.setAdapter(myEventsOrgAdapter);
+
+                new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        myEventsOrgAdapter.deleteEvent(viewHolder.getAdapterPosition());
+                        myEventsOrgAdapter.notifyDataSetChanged();
+
+                    }
+                }).attachToRecyclerView(recyclerView);
+
+                // Update the RecyclerView with the new data
+                if (myEventsOrgAdapter != null) {
+                    myEventsOrgAdapter.notifyDataSetChanged(); // Notify adapter of data change
+                }// Notify adapter of data change
+            }
+        });
     }
 }

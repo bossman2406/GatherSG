@@ -84,7 +84,8 @@ public class attendance extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                scanQrCode();
+                addAttendanceToFirestore(selectedEvent, "HMy8ZYntERNIXTCNjNNJwrBHCCC2");
+                //scanQrCode();
             }
         });
 
@@ -98,6 +99,7 @@ public class attendance extends AppCompatActivity {
         intentIntegrator.setPrompt("Scan QR Code");
         intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
         intentIntegrator.initiateScan();
+
     }
 
     @Override
@@ -127,7 +129,7 @@ public class attendance extends AppCompatActivity {
             for (DocumentSnapshot document : queryDocumentSnapshots) {
                 // Extract data from the document
                 String eventName = document.getString(eventHelper.KEY_EVENTNAME);
-                viaHours = document.getLong(eventHelper.KEY_VIA);
+
 
                 // Log the data for debugging
                 Log.d("My_TAG", eventName);
@@ -139,24 +141,39 @@ public class attendance extends AppCompatActivity {
         });
     }
 
-    private void  addAttendanceToFirestore(String selectedEvent, String uidAttendance) {
-        DocumentReference attendanceRef = db.collection(eventHelper.KEY_EVENTS).document(selectedEvent).collection(eventHelper.KEY_EVENTATTENDANCE).document(uidAttendance);
+    private void addAttendanceToFirestore(String selectedEvent, String uidAttendance) {
+        DocumentReference attendanceRef = db.collection(eventHelper.KEY_EVENTS)
+                .document(selectedEvent)
+                .collection(eventHelper.KEY_EVENTATTENDANCE)
+                .document(uidAttendance);
+
         attendanceRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     DocumentSnapshot temp = task.getResult();
-                    if(temp.exists()){
-                        Toast.makeText(getApplicationContext(),"Volunteer has already Signed up",Toast.LENGTH_SHORT).show();
-                    }else{
-                        DocumentReference eventSignUp = db.collection(eventHelper.KEY_EVENTS).document(selectedEvent).collection(eventHelper.KEY_EVENTSIGNUP).document(uidAttendance);
+                    if (temp.exists()) {
+                        Log.d("Attendance", "Volunteer has already Signed up");
+                        Toast.makeText(getApplicationContext(), "Volunteer has already Signed up", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d("Attendance", "Volunteer has not already Signed up");
+                        Toast.makeText(getApplicationContext(), "Volunteer has not already Signed up", Toast.LENGTH_SHORT).show();
+
+                        DocumentReference eventSignUp = db.collection(eventHelper.KEY_EVENTS)
+                                .document(selectedEvent)
+                                .collection(eventHelper.KEY_EVENTSIGNUP)
+                                .document(uidAttendance);
+
                         eventSignUp.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if(task.isSuccessful()){
+                                if (task.isSuccessful()) {
                                     DocumentSnapshot temp2 = task.getResult();
-                                    if(temp2.exists()){
-                                        DocumentReference volunteer = db.collection(accountHelper.KEY_VOLUNTEER).document(uidAttendance);
+                                    if (temp2.exists()) {
+                                        DocumentReference volunteer = db.collection(accountHelper.KEY_VOLUNTEER)
+                                                .document(uidAttendance);
+
+                                        Log.d("Attendance", "Volunteer has signed up for event");
 
                                         volunteer.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                             @Override
@@ -173,58 +190,103 @@ public class attendance extends AppCompatActivity {
                                                         volunteerData.put(accountHelper.KEY_USERNAME, name);
                                                         volunteerData.put(accountHelper.KEY_EMAIL, email);
                                                         volunteerData.put(accountHelper.KEY_NUMBER, number);
-                                                        volunteerData.put(accountHelper.KEY_VIA, via);
-                                                        attendanceRef.set(volunteerData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void unused) {
-                                                                //Log and toast
-                                                                Toast.makeText(getApplicationContext(), name + " attendance recorded", Toast.LENGTH_SHORT).show();
-                                                                Log.d("Attendance", name + " attendance recorded");
 
-                                                                DocumentReference viaRef = db.collection(accountHelper.KEY_VOLUNTEER).document(uidAttendance);
+                                                        Log.d("Attendance", "Volunteer Data Retrieved");
+                                                        Toast.makeText(getApplicationContext(), "Volunteer Data Retrieved", Toast.LENGTH_SHORT).show();
 
-                                                                long newCount = (via != null) ? via + viaHours  : 0;
 
-                                                                Map<String, Object> temp = new HashMap<>();
-                                                                temp.put(accountHelper.KEY_VIA, newCount);
 
-                                                                viaRef.update(temp).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        attendanceRef.set(volunteerData)
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                     @Override
-                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                        DocumentReference docRef = volunteer.collection(accountHelper.KEY_MYEVENTS).document(selectedEvent);
+                                                                    public void onSuccess(Void unused) {
+                                                                        // Log and toast
+                                                                        Toast.makeText(getApplicationContext(), name + " attendance recorded", Toast.LENGTH_SHORT).show();
+                                                                        Log.d("Attendance", name + " attendance recorded");
+
+                                                                        db.collection(eventHelper.KEY_EVENTS).document(selectedEvent).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                if (task.isSuccessful()) {
+                                                                                    DocumentSnapshot temp3 = task.getResult();
+                                                                                    if (temp3.exists()) {
+                                                                                        Long viaHours = temp3.getLong(eventHelper.KEY_VIA);
+                                                                                        DocumentReference viaRef = db.collection(accountHelper.KEY_VOLUNTEER)
+                                                                                                .document(uidAttendance);
+
+                                                                                        long newCount = (via != null) ? via + viaHours : 0;
+
+                                                                                        Map<String, Object> temp = new HashMap<>();
+                                                                                        temp.put(accountHelper.KEY_VIA, newCount);
+
+                                                                                        viaRef.update(temp).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                                                DocumentReference docRef = volunteer
+                                                                                                        .collection(accountHelper.KEY_MYEVENTS)
+                                                                                                        .document(selectedEvent);
+                                                                                                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                                                    @Override
+                                                                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                                        if (task.isSuccessful()) {
+                                                                                                            DocumentSnapshot temp4 = task.getResult();
+                                                                                                            if (temp4.exists()) {
+                                                                                                                String date = temp4.getString(eventHelper.KEY_EVENTDATE);
+                                                                                                                String desc = temp4.getString(eventHelper.KEY_EVENTDESC);
+
+                                                                                                                Map<String, Object> temp2 = new HashMap<>();
+                                                                                                                temp2.put(eventHelper.KEY_EVENTNAME, selectedEvent);
+                                                                                                                temp2.put(eventHelper.KEY_EVENTDATE, date);
+                                                                                                                temp2.put(eventHelper.KEY_EVENTDESC, desc);
+                                                                                                                DocumentReference docRef1 = volunteer
+                                                                                                                        .collection(accountHelper.KEY_ATTENDEDEVENTS)
+                                                                                                                        .document(selectedEvent);
+                                                                                                                docRef1.set(temp2).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                                    @Override
+                                                                                                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                                                    }
+                                                                                                                });
+
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                });
+
+                                                                                                Log.d("Attendance", "VIA count updated");
+                                                                                            }
+                                                                                        });
+                                                                                    }
+                                                                                    }
+                                                                            }
+                                                                        });
+
 
                                                                     }
                                                                 });
-
-
-                                                            }
-                                                        });
-
+                                                    } else {
+                                                        Log.d("Attendance", "Volunteer data not found");
                                                     }
-
                                                 }
                                             }
                                         });
                                     } else {
-                                        Toast.makeText(getApplicationContext(),"Volunteer has not signed up for event",Toast.LENGTH_SHORT).show();
+                                        Log.d("Attendance", "Volunteer has not signed up for event");
+                                        Toast.makeText(getApplicationContext(), "Volunteer has not signed up for event", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             }
                         });
-
-
-
-
                     }
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                //add toast
+                Log.e("Attendance", "Error: " + e.getMessage(), e);
+                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
     @Override
     public void onBackPressed() {

@@ -20,9 +20,9 @@
             android:title="My Events" />
 
         <item
-            android:gravity = "center_vertical"
             android:id="@+id/chatbot"
-            android:icon="@drawable/customer_support"
+            android:gravity="center_vertical"
+            android:icon="@android:drawable/ic_menu_gallery"
             android:title="Chatbot" />
 
         <item
