@@ -1,6 +1,7 @@
 package com.gathersg.user.events;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -121,6 +123,7 @@ public class upcomingEventAdapter extends RecyclerView.Adapter<upcomingEventAdap
         FirebaseAuth auth;
         FirebaseUser user;
         FirebaseFirestore db;
+        CardView cardView;
 
         public ViewHolder(@NonNull View v) {
             super(v);
@@ -132,6 +135,7 @@ public class upcomingEventAdapter extends RecyclerView.Adapter<upcomingEventAdap
             loc = v.findViewById(R.id.eventCardLoc);
             image = v.findViewById(R.id.eventCardImage);
             volunteerSignUp = v.findViewById(R.id.volunteerSignUpButton);
+
 
             auth = FirebaseAuth.getInstance();
             db = FirebaseFirestore.getInstance();

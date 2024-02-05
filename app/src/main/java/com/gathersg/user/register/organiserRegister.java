@@ -78,12 +78,7 @@ public class organiserRegister extends Fragment {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    check = true;
-                }
-                else {
-                    check = false;
-                }
+                check = isChecked;
             }
         });
         checkBox.setOnClickListener(new View.OnClickListener() {

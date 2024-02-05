@@ -104,31 +104,8 @@ public class myPhotosAdapter extends RecyclerView.Adapter<myPhotosAdapter.ViewHo
             desc = v.findViewById(R.id.photoDesc);
             image = v.findViewById(R.id.photoPhoto);
             profile = v.findViewById(R.id.photoProfile);
-
-
         }
 
-//            public void bindData(int position) {
-//                db.collection(//change ).document(nameList.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            if (document.exists()) {
-//                                String eventStatus = document.getString(eventHelper.KEY_EVENTSTATUS);
-//                                String signUpStatus = document.getString(eventHelper.KEY_SIGNUPSTATUS);
-//                                Map<String, Object> temp = new HashMap<>();
-//                                temp.put(eventHelper.KEY_SIGNUPSTATUS, signUpStatus);
-//                                temp.put(eventHelper.KEY_EVENTSTATUS, eventStatus);
-//                                db.collection(accountHelper.KEY_VOLUNTEER)
-//                                        .document(auth.getUid())
-//                                        .collection(accountHelper.KEY_MYEVENTS)
-//                                        .document(nameList.get(position))
-//                                        .update(temp);
-//                            }
-//                        }
-//                    }
-//                });
             }
 
             // need change layout

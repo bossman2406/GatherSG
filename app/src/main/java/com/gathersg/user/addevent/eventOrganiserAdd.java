@@ -1,6 +1,7 @@
 package com.gathersg.user.addevent;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +21,7 @@ import com.gathersg.user.mainpage.MainActivity;
 import com.gathersg.user.R;
 import com.gathersg.user.helpers.accountHelper;
 import com.gathersg.user.helpers.eventHelper;
+import com.gathersg.user.map.GPSTracker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,6 +46,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
     FirebaseAuth auth;
     eventHelper helper;
     accountHelper account;
+    GPSTracker gpsTracker;
     private EditText eventName, eventDesc, eventLocName, eventMaxPax,eventVIA;
     private String eventDate;
     private MaterialCardView dateCard, locCard;
@@ -53,6 +56,8 @@ public class eventOrganiserAdd extends AppCompatActivity {
     private Button eventPublishButton;
     private TextView viewPublishedEvents, eventPublishDate;
     private FirebaseFirestore db;
+    Double lat,lon;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,16 +96,55 @@ public class eventOrganiserAdd extends AppCompatActivity {
             }
         });
 
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_getlocation);
+
         locCard.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                onGetLocationButtonClick();
+            public void onClick(View v)
+            {
+                EditText latitude = dialog.findViewById(R.id.latitude);
+                EditText longitude = dialog.findViewById(R.id.longitude);
+                TextView getLocation = dialog.findViewById(R.id.getLocation);
+                Button setLocation = dialog.findViewById(R.id.setLocation);
+                getLocation.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        gpsTracker = new GPSTracker(eventOrganiserAdd.this);
+                        lat = gpsTracker.getLatitude();
+                        lon = gpsTracker.getLongitude();
+                        latitude.setText(String.valueOf(lat));
+                        longitude.setText(String.valueOf(lon));
+                    }
+                });
+                setLocation.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(latitude.getText().toString().isEmpty()){
+                            Toast.makeText(getApplicationContext(),"ENTER LATITUDE", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(longitude.getText().toString().isEmpty()){
+                            Toast.makeText(getApplicationContext(),"ENTER LONGITUDE", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        lat = Double.parseDouble(latitude.getText().toString());
+                        lon = Double.parseDouble(longitude.getText().toString());
+                        setLocation.setText("Latitude: "+ lat.toString()+ "\n"+"Longitude: Suria with bubble");
+
+                        dialog.dismiss();
+
+                    }
+                });
+                dialog.show();
             }
         });
 
         viewPublishedEvents.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 onViewPublishedEventsClick();
             }
         });
@@ -142,12 +186,14 @@ public class eventOrganiserAdd extends AppCompatActivity {
                             eventData.put(eventHelper.KEY_EVENTDESC, eventDescValue);
                             eventData.put(eventHelper.KEY_EVENTLOCNAME, eventLocNameValue);
                             eventData.put(eventHelper.KEY_EVENTMAXPAX, eventMaxPaxValue);
-                            eventData.put(eventHelper.KEY_LAT, 0);
-                            eventData.put(eventHelper.KEY_LON, 0);
+                            eventData.put(eventHelper.KEY_LAT, lat);
+                            eventData.put(eventHelper.KEY_LON, lon);
                             eventData.put(eventHelper.KEY_EVENTDATE, eventDateValue);
                             eventData.put(eventHelper.KEY_EVENTORG, eventOrg);
                             eventData.put(eventHelper.KEY_EVENTSIGNUP, 0);
                             eventData.put(eventHelper.KEY_VIA,eventVIAHours);
+                            eventData.put(eventHelper.KEY_EVENTSTATUS,eventHelper.KEY_EVENTUPCOMING);
+                            eventData.put(eventHelper.KEY_SIGNUPSTATUS,eventHelper.KEY_OPEN);
 
                             // Add the imageData if available
                             if (imageData != null) {
@@ -183,8 +229,8 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                                             myEvents.put(eventHelper.KEY_EVENTDESC, eventDescValue);
                                                             myEvents.put(eventHelper.KEY_EVENTLOCNAME, eventLocNameValue);
                                                             myEvents.put(eventHelper.KEY_EVENTMAXPAX, eventMaxPaxValue);
-                                                            myEvents.put(eventHelper.KEY_LAT, 0);
-                                                            myEvents.put(eventHelper.KEY_LON, 0);
+                                                            myEvents.put(eventHelper.KEY_LAT, lat);
+                                                            myEvents.put(eventHelper.KEY_LON, lon);
                                                             myEvents.put(eventHelper.KEY_EVENTDATE, eventDateValue);
                                                             myEvents.put(eventHelper.KEY_EVENTORG, eventOrg);
                                                             myEvents.put(eventHelper.KEY_EVENTSIGNUP, 0);
@@ -219,8 +265,8 @@ public class eventOrganiserAdd extends AppCompatActivity {
                                                             myEvents.put(eventHelper.KEY_EVENTDESC, eventDescValue);
                                                             myEvents.put(eventHelper.KEY_EVENTLOCNAME, eventLocNameValue);
                                                             myEvents.put(eventHelper.KEY_EVENTMAXPAX, eventMaxPaxValue);
-                                                            myEvents.put(eventHelper.KEY_LAT, 0);
-                                                            myEvents.put(eventHelper.KEY_LON, 0);
+                                                            myEvents.put(eventHelper.KEY_LAT, lat);
+                                                            myEvents.put(eventHelper.KEY_LON, lon);
                                                             myEvents.put(eventHelper.KEY_EVENTDATE, eventDateValue);
                                                             myEvents.put(eventHelper.KEY_EVENTORG, eventOrg);
                                                             myEvents.put(eventHelper.KEY_EVENTSIGNUP, 0);
@@ -308,10 +354,6 @@ public class eventOrganiserAdd extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-
-    private void onGetLocationButtonClick() {
-        // Implement the logic when the get location button is clicked
-    }
 
     private void onViewPublishedEventsClick() {
         // Implement the logic when the view published events button is clicked

@@ -6,6 +6,7 @@ import static com.gathersg.user.calendar.CalendarUtils.selectedDate;
 import static com.gathersg.user.calendar.dateCompare.parseDateString;
 import static com.gathersg.user.calendar.dateCompare.parseDateStringToLocalDate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,6 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gathersg.user.R;
 import com.gathersg.user.calendar.CalendarAdapter;
 import com.gathersg.user.calendar.CalendarUtils;
+import com.gathersg.user.map.GPSTracker;
+import com.gathersg.user.map.MapActivity;
+import com.gathersg.user.map.RecyclerItemClickListener;
 import com.gathersg.user.services.dataLinking;
 import com.gathersg.user.helpers.accountHelper;
 import com.gathersg.user.helpers.eventHelper;
@@ -61,6 +66,9 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
     com.gathersg.user.services.dataLinking dataLinking;
     String uid;
     String temp;
+     double myLatitude = 0.0d;
+     double myLongitude = 0.0d;
+     GPSTracker gpsTracker;
 
     public weeklyCalendarVol() {
         // Required empty public constructor
@@ -122,7 +130,6 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
     public void setWeekView() {
         monthYearText.setText(monthYearFromDate(CalendarUtils.selectedDate));
         ArrayList<LocalDate> days = daysInWeekArray(CalendarUtils.selectedDate);
-
         CalendarAdapter calendarAdapter = new CalendarAdapter(days, (CalendarAdapter.OnItemListener) getContext());
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
@@ -227,6 +234,29 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
                 myEventsVolAdapter = new myEventsVolAdapter(getContext(), nameList, descList, dateList, orgList, locNameList, latList, lonList, imageList, statusList);
 
                 recyclerView.setAdapter(myEventsVolAdapter);
+                recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView,
+                        new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                myLatitude = gpsTracker.getLatitude();
+                                myLongitude = gpsTracker.getLongitude();
+
+                                Intent intent = new Intent(getContext(), MapActivity.class);
+                                intent.putExtra("LATITUDE", latList.get(position));
+                                intent.putExtra("LONGITUDE", lonList.get(position));
+                                intent.putExtra("NAME", nameList.get(position));
+                                intent.putExtra("MYLATITUDE", myLatitude);
+                                intent.putExtra("MYLONGITUDE",myLongitude);
+
+
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onLongItemClick(View view, int position) {
+
+                            }
+                        }));
 
 
                 // Update the RecyclerView with the new data

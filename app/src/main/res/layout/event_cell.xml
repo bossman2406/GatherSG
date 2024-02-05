@@ -6,6 +6,7 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/locationCard"
         android:layout_width="380dp"
         android:layout_height="150dp"
         android:layout_gravity="center"

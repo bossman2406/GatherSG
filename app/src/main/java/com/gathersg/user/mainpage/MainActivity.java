@@ -19,6 +19,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.gathersg.user.OrgDir.OrganisationDirectory;
 import com.gathersg.user.R;
 import com.gathersg.user.addevent.eventOrganiserAddPhoto;
 import com.gathersg.user.calendar.CalendarAdapter;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     private com.gathersg.user.myPhotos.myPhotos myPhotos;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private com.gathersg.user.mainpage.aboutFragment aboutFragment;
+    private OrganisationDirectory organisationDirectory;
+    donatePage donatePage;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
@@ -115,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         allEvents = new allEvents();
         myPhotos = new myPhotos();
         aboutFragment = new aboutFragment();
+        organisationDirectory = new OrganisationDirectory();
+        donatePage = new donatePage();
 
 
         bottomNav = findViewById(R.id.bottomNav);
@@ -125,10 +130,21 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         onActivityStart();
 
-        fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, allEvents)
-                .setReorderingAllowed(true)
-                .addToBackStack(null)
-                .commit();
+
+
+        String name = getIntent().getStringExtra("fragment");
+        if ("gallery".equals(name)) {  // Use "gallery".equals() to avoid NullPointerException
+            fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, myPhotos)
+                    .setReorderingAllowed(true)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, allEvents)
+                    .setReorderingAllowed(true)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
 
 
         bottomNav.setOnItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -236,6 +252,18 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                 int id = item.getItemId();
                 if (id == R.id.accountNav) {
                     fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, userProfile)
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
+                            .commit();
+                }
+                if(id == R.id.directoryNav){
+                    fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, organisationDirectory)
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
+                            .commit();
+                }
+                if(id == R.id.webNav){
+                    fragmentManager.beginTransaction().replace(R.id.mainFragmentContainer, donatePage)
                             .setReorderingAllowed(true)
                             .addToBackStack(null)
                             .commit();

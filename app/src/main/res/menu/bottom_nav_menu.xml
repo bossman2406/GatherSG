@@ -22,8 +22,8 @@
         <item
             android:id="@+id/chatbot"
             android:gravity="center_vertical"
-            android:icon="@android:drawable/ic_menu_gallery"
-            android:title="Chatbot" />
+            android:icon="@drawable/gallery"
+            android:title="Gallery" />
 
         <item
             android:gravity = "center_vertical"

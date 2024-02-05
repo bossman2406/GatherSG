@@ -10,7 +10,21 @@
             android:id="@+id/accountNav"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:title="Account Center" />
+            android:title="Account Center"
+            android:icon="@drawable/user"/>
+        <item
+            android:id = "@+id/directoryNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="Organisation Directory"
+            android:icon="@drawable/contacts"/>
+        <item
+            android:icon="@drawable/heart"
+            android:id="@+id/webNav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="Organisation Directory"/>
+
     </group>
     <group
         android:id="@+id/menu_bottom"
@@ -20,11 +34,13 @@
             android:id="@+id/aboutNav"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:title="About" />
+            android:title="About"
+            android:icon="@drawable/information"/>
         <item
             android:id="@+id/logoutNav"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:title="Logout" />
+            android:title="Logout"
+            android:icon="@drawable/logout"/>
     </group>
 </menu>

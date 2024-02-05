@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.widget.VideoView;
 
 import com.gathersg.user.R;
@@ -14,6 +15,8 @@ import com.gathersg.user.login.Login;
 
 public class splashscreen extends AppCompatActivity {
     VideoView videoView;
+
+    private MediaPlayer mediaPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +30,11 @@ public class splashscreen extends AppCompatActivity {
 
         videoView.setVideoURI(uri);
 
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-            }
-        });
+        mediaPlayer = MediaPlayer.create(this, R.raw.splashmusic);
+        mediaPlayer.setLooping(false);
+
+       videoView.start();
+       mediaPlayer.start();
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

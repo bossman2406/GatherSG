@@ -1,5 +1,6 @@
 package com.gathersg.user.events;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gathersg.user.R;
 import com.gathersg.user.helpers.eventHelper;
+import com.gathersg.user.map.MapActivity;
+import com.gathersg.user.map.RecyclerItemClickListener;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -124,7 +127,10 @@ public class allEvents extends Fragment {
             }
         });
 
+
         return view;
+
     }
+
 }
 

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.gathersg.user.R;
@@ -32,7 +33,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -55,6 +58,7 @@ public class myPhotoAdd extends AppCompatActivity {
     private Button eventPublishButton;
     private TextView viewPublishedEvents, eventPublishDate;
     private FirebaseFirestore db;
+    String uid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,7 @@ public class myPhotoAdd extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        uid = auth.getCurrentUser().getUid();
         eventName = findViewById(R.id.eventPublishName);
         eventDesc = findViewById(R.id.eventPublishDesc);
         eventPublishButton = findViewById(R.id.eventPublishButton);
@@ -86,17 +91,20 @@ public class myPhotoAdd extends AppCompatActivity {
         if (eventNameValue.isEmpty() || eventDescValue.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Fill in all data fields", Toast.LENGTH_SHORT).show();
         } else {
+            // Get the user's UID
+            uid = auth.getCurrentUser().getUid();
 
-            db.collection(accountHelper.accountType).document(auth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            db.collection(accountHelper.accountType).document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         DocumentSnapshot documentSnapshot = task.getResult();
-                        if(documentSnapshot.exists()){
+                        if (documentSnapshot.exists()) {
                             Blob temp = documentSnapshot.getBlob(accountHelper.KEY_IMAGE);
                             Map<String, Object> eventData = new HashMap<>();
                             eventData.put(eventHelper.KEY_EVENTNAME, eventNameValue);
                             eventData.put(eventHelper.KEY_EVENTDESC, eventDescValue);
+                            eventData.put(accountHelper.KEY_UID, uid);
 
                             // Add the imageData if available
                             if (imageData != null) {
@@ -110,42 +118,49 @@ public class myPhotoAdd extends AppCompatActivity {
                             // Specify a document reference with a unique ID
                             DocumentReference eventDocument = db.collection(accountHelper.KEY_MYPHOTOS).document();
 
-                            // Set the data in the document
-                            eventDocument.set(eventData)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // Use the same eventData for the second set operation
-                                            DocumentReference myPhoto = db.collection(accountHelper.accountType)
-                                                    .document(auth.getUid())
-                                                    .collection(accountHelper.KEY_MYPHOTOS)
-                                                    .document();
+                            // Use a transaction to ensure atomicity
+                            db.runTransaction(new Transaction.Function<Void>() {
+                                @Nullable
+                                @Override
+                                public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                                    // Set the data in the general "myposts" collection
+                                    transaction.set(eventDocument, eventData);
 
-                                            myPhoto.set(eventData)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void unused) {
-                                                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                                            startActivity(intent);
-                                                            finish();
-                                                        }
-                                                    });
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            // Handle failure
-                                            Log.e("Firestore", "Error adding document", e);
-                                        }
-                                    });
+                                    // Use the same eventData for the second set operation
+                                    DocumentReference myPhoto = db.collection(accountHelper.accountType)
+                                            .document(uid)
+                                            .collection(accountHelper.KEY_MYPHOTOS)
+                                            .document();
+
+                                    // Set the data in the user-specific collection
+                                    transaction.set(myPhoto, eventData);
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    intent.putExtra("fragment","gallery");
+                                    startActivity(intent);
+                                    finish();
+
+
+                                    return null;
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    onBackPressed();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle failure
+                                    Log.e("Firestore", "Transaction failure", e);
+                                }
+                            });
                         }
                     }
                 }
-
             });
-            // Use Firestore server timestamp
-
         }
     }
 

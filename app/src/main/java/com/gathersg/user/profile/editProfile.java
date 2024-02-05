@@ -18,6 +18,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,9 +32,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.gathersg.user.R;
 import com.gathersg.user.helpers.accountHelper;
+import com.gathersg.user.login.Login;
 import com.gathersg.user.mainpage.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.Blob;
@@ -59,7 +63,7 @@ public class editProfile extends AppCompatActivity {
     private static final int MY_CAMERA_PERMISSION_REQUEST = 123;
 
     EditText editUsername, editPassword, editBio, editEmail, editNumber;
-    TextView editDOB;
+    TextView editDOB,editDOBTitle;
     Button saveButton, imageButton;
     String usernameUser, passwordUser, bioUser, emailUser, numberUser,dobUser;
 
@@ -86,8 +90,18 @@ public class editProfile extends AppCompatActivity {
 
         editBio = findViewById(R.id.edit_bio);
 
+
+
         editNumber = findViewById(R.id.edit_number);
         editDOB = findViewById(R.id.edit_DOB);
+        editDOBTitle = findViewById(R.id.edit_dobTitle);
+
+
+
+        if(accountHelper.accountType.equals(accountHelper.KEY_ORGANISERS)){
+            editDOBTitle.setText("Edit Organisation Anniversary:");
+            editDOB.setText("Edit Organisation Anniversary:");
+        }
         imageButton = findViewById(R.id.galleryBtn);
         profilePic = findViewById(R.id.previewImage);
         editDOB.setOnClickListener(new View.OnClickListener() {
@@ -169,7 +183,94 @@ public class editProfile extends AppCompatActivity {
             }
         }
         );
-}
+        TextView change = findViewById(R.id.forgetPassword);
+        change.setOnClickListener(new View.OnClickListener() {
+            private EditText email, text;
+            Button reset;
+
+            @Override
+            public void onClick(View v) {
+                // Assuming you have a reference to your dialog
+                Dialog dialog = new Dialog(editProfile.this);
+                dialog.setContentView(R.layout.changepassword);
+
+                // Ensure proper initialization of email and text EditText
+                email = dialog.findViewById(R.id.emailLogin);
+                text = dialog.findViewById(R.id.passwordLogin);
+                reset = dialog.findViewById(R.id.resetBtn);
+                reset.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (email == null || text == null) {
+                            // Handle the case where EditText objects are not found
+                            Log.e("userProfile", "EditText objects are null");
+                            return;
+                        }
+
+                        String userEmail = email.getText().toString();
+                        String newPassword = text.getText().toString();
+
+                        if (TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(newPassword)) {
+                            // Handle empty input, show an error message or return early
+                            Toast.makeText(editProfile.this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        AuthCredential credential = EmailAuthProvider.getCredential(userEmail, newPassword);
+
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        if (user != null) {
+                            user.reauthenticate(credential)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                // User reauthenticated successfully
+                                                // Proceed with changing the password
+                                                email.setText("");
+                                                text.setText("");
+                                                reset.setText("RESET");
+
+                                                reset.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+
+                                                        String userEmail = email.getText().toString();
+                                                        String newPassword = text.getText().toString();
+
+                                                        if (TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(newPassword)) {
+                                                            // Handle empty input, show an error message or return early
+                                                            Toast.makeText(editProfile.this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show();
+                                                            return;
+                                                        }
+                                                        changePassword(newPassword);
+                                                    }
+                                                });
+
+
+
+                                                // Clear the EditText fields after successful password change
+
+
+                                                Toast.makeText(editProfile.this, "Login successfully", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                // Handle reauthentication failure
+                                                Toast.makeText(editProfile.this, "Reauthentication failed", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+
+
+
+                dialog.show();
+            }
+        });
+
+    }
 
 
     public boolean isUsernameChanged(){
@@ -376,6 +477,26 @@ public class editProfile extends AppCompatActivity {
         } else {
             throw new Exception("Failed to open InputStream for selected image URI");
         }
+    }
+    private void changePassword(String newPassword) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.updatePassword(newPassword)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Password changed successfully
+                            // Provide user feedback, e.g., show a Toast
+                            Toast.makeText(editProfile.this, "Password changed successfully", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(editProfile.this, Login.class);
+                            startActivity(intent);
+                        } else {
+                            // Handle password change failure
+                            Toast.makeText(editProfile.this, "Failed to change password", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
 

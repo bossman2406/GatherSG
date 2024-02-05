@@ -23,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.gathersg.user.R;
 import com.gathersg.user.helpers.accountHelper;
 import com.gathersg.user.login.Login;
+import com.gathersg.user.mainpage.MainActivity;
+import com.gathersg.user.myPhotos.myUserPhotos;
 import com.gathersg.user.profile.editProfile;
 import com.gathersg.user.profile.personal_info;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,10 +42,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class userProfile extends Fragment {
 
-    FirebaseFirestore db;
-    FirebaseAuth auth;
+    FirebaseFirestore db =FirebaseFirestore.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     FragmentContainerView fragmentContainerView;
+    com.gathersg.user.myPhotos.myUserPhotos myUserPhotos;
     personal_info personalInfo;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -67,6 +70,7 @@ public class userProfile extends Fragment {
         edit = view.findViewById(R.id.editProfile);
         change = view.findViewById(R.id.changePassword);
 
+
         
         editProfile = new editProfile();
         edit.setOnClickListener(new View.OnClickListener() {
@@ -77,94 +81,38 @@ public class userProfile extends Fragment {
             }
         });
         change.setOnClickListener(new View.OnClickListener() {
-            private EditText email, text;
-            Button reset;
+                                      @Override
+                                      public void onClick(View v) {
+                                          // Inside the child fragment, get the activity
+                                          MainActivity mainActivity = (MainActivity) getActivity();
 
-            @Override
-            public void onClick(View v) {
-                // Assuming you have a reference to your dialog
-                Dialog dialog = new Dialog(getContext());
-                dialog.setContentView(R.layout.changepassword);
+                                          if (mainActivity != null) {
+                                              // Create a new instance of the different fragment
+                                              myUserPhotos newFragment = new myUserPhotos();
 
-                // Ensure proper initialization of email and text EditText
-                email = dialog.findViewById(R.id.emailLogin);
-                text = dialog.findViewById(R.id.passwordLogin);
-                reset = dialog.findViewById(R.id.resetBtn);
-                reset.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (email == null || text == null) {
-                            // Handle the case where EditText objects are not found
-                            Log.e("userProfile", "EditText objects are null");
-                            return;
-                        }
+                                              // Start a fragment transaction using the activity's FragmentManager
+                                              FragmentTransaction fragmentTransaction = mainActivity.getSupportFragmentManager().beginTransaction();
 
-                        String userEmail = email.getText().toString();
-                        String newPassword = text.getText().toString();
+                                              // Replace the activity's container with the different fragment
+                                              fragmentTransaction.replace(R.id.mainFragmentContainer, newFragment);
 
-                        if (TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(newPassword)) {
-                            // Handle empty input, show an error message or return early
-                            Toast.makeText(getContext(), "Email and password cannot be empty", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+                                              // Add the transaction to the back stack (optional)
+                                              fragmentTransaction.addToBackStack(null);
 
-                        AuthCredential credential = EmailAuthProvider.getCredential(userEmail, newPassword);
-
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                        if (user != null) {
-                            user.reauthenticate(credential)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                // User reauthenticated successfully
-                                                // Proceed with changing the password
-                                                email.setText("");
-                                                text.setText("");
-                                                reset.setText("RESET");
-
-                                                reset.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-
-                                                        String userEmail = email.getText().toString();
-                                                       String newPassword = text.getText().toString();
-
-                                                        if (TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(newPassword)) {
-                                                            // Handle empty input, show an error message or return early
-                                                            Toast.makeText(getContext(), "Email and password cannot be empty", Toast.LENGTH_SHORT).show();
-                                                            return;
-                                                        }
-                                                        changePassword(newPassword);
-                                                    }
-                                                });
+                                              // Commit the transaction
+                                              fragmentTransaction.commit();
+                                          }
 
 
 
-                                                // Clear the EditText fields after successful password change
 
 
-                                                Toast.makeText(getContext(), "Login successfully", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                // Handle reauthentication failure
-                                                Toast.makeText(getContext(), "Reauthentication failed", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-                        }
-                    }
-                });
+                                      }
+                                  });
 
 
-
-                dialog.show();
-            }
-        });
-
-
-        //add db to get username , uid and image;
-        db = FirebaseFirestore.getInstance();
+                //add db to get username , uid and image;
+                db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
         String uid = currentUser.getUid();

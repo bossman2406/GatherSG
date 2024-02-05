@@ -4,6 +4,7 @@ public class accountHelper {
 
     public static final String KEY_USERNAME = "username";
     public static final String KEY_EMAIL = "email";
+    public static final String KEY_UID = "uid";
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_NUMBER = "number";
     public static final String KEY_IMAGE = "image";

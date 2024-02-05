@@ -5,6 +5,7 @@ import static com.gathersg.user.calendar.CalendarUtils.monthYearFromDate;
 import static com.gathersg.user.calendar.CalendarUtils.selectedDate;
 import static com.gathersg.user.calendar.dateCompare.parseDateStringToLocalDate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gathersg.user.R;
 import com.gathersg.user.calendar.CalendarAdapter;
 import com.gathersg.user.calendar.CalendarUtils;
+import com.gathersg.user.map.MapActivity;
+import com.gathersg.user.map.RecyclerItemClickListener;
 import com.gathersg.user.services.dataLinking;
 import com.gathersg.user.helpers.accountHelper;
 import com.gathersg.user.helpers.eventHelper;
@@ -129,6 +132,8 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
+        setEvent();
+
 
     }
 
@@ -187,6 +192,7 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
                     Double lon = document.getDouble(eventHelper.KEY_LON);
                     Blob image = document.getBlob(eventHelper.KEY_EVENTIMAGE);
                     String status = document.getString(eventHelper.KEY_EVENTSTATUS);
+                    Long signUp = document.getLong(eventHelper.KEY_EVENTSIGNUP);
 
                     // Log the data for debugging
                     Log.d("My_TAG", eventName + eventDesc + date + organiser + locName + lat + lon + image);
@@ -214,9 +220,11 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
                         lonList.add(lon);
                         imageList.add(image);
                         statusList.add(status);
+                        signUpList.add(signUp);
+
 
                         eventHelper helper = new eventHelper();
-                        helper.uploadmyEvents(eventName, eventDesc, date, organiser, locName, lat, lon, image, status);
+                        helper.uploadmyOrgEvents(eventName, eventDesc, date, organiser, locName, lat, lon, image, status,signUp);
                         eventHelpers.add(helper);
 
                     }
@@ -227,19 +235,7 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
                 myEventsOrgAdapter = new myEventsOrgAdapter(getContext(), nameList, descList, dateList, orgList, locNameList, latList, lonList, imageList, statusList, signUpList);
                 recyclerView.setAdapter(myEventsOrgAdapter);
 
-                new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-                    @Override
-                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                        return false;
-                    }
 
-                    @Override
-                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                        myEventsOrgAdapter.deleteEvent(viewHolder.getAdapterPosition());
-                        myEventsOrgAdapter.notifyDataSetChanged();
-
-                    }
-                }).attachToRecyclerView(recyclerView);
 
                 // Update the RecyclerView with the new data
                 if (myEventsOrgAdapter != null) {
@@ -247,5 +243,38 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
                 }// Notify adapter of data change
             }
         });
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+
+                if (position != RecyclerView.NO_POSITION) {
+                    if (direction == ItemTouchHelper.LEFT) {
+                        // Open map on swipe left
+                        openMap(position);
+                    } else if (direction == ItemTouchHelper.RIGHT) {
+                        // Delete on swipe right
+                        myEventsOrgAdapter.deleteEvent(position);
+                        myEventsOrgAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+
+        }).attachToRecyclerView(recyclerView);
     }
+
+    private void openMap(int position) {
+        Intent intent = new Intent(getContext(), MapActivity.class);
+        intent.putExtra("LATITUDE", latList.get(position));
+        intent.putExtra("LONGITUDE", lonList.get(position));
+        intent.putExtra("NAME", nameList.get(position));
+        startActivity(intent);
+    }
+
 }

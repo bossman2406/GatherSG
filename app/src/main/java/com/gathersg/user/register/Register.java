@@ -17,7 +17,7 @@ import com.gathersg.user.register.volunteerRegister;
 
 public class Register extends AppCompatActivity {
 
-    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private final FragmentManager fragmentManager = getSupportFragmentManager();
     private Button volunteers, organiser;
     private TextView textView;
 

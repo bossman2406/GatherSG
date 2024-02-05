@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".profile.personal_info">
-
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -17,7 +16,10 @@
 
 
             <include layout="@layout/item_bio" />
-
+            <include layout = "@layout/item_email"/>
+            <include layout = "@layout/item_number"/>
+            <include layout="@layout/item_via"/>
+            <include layout="@layout/item_bio" />
             <include layout = "@layout/item_email"/>
             <include layout = "@layout/item_number"/>
             <include layout="@layout/item_via"/>
@@ -25,6 +27,6 @@
         </LinearLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 </FrameLayout>

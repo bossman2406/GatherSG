@@ -48,7 +48,6 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
-
     public myEventsOrgAdapter(Context context, ArrayList<String> nameList, ArrayList<String> descList,
                               ArrayList<String> dateList, ArrayList<String> orgList,
                               ArrayList<String> locNameList, ArrayList<Double> latList, ArrayList<Double> lonList,
@@ -64,15 +63,13 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
         this.imageList = imageList;
         this.statusList = statusList;
         this.signUpList = signUpList;
+
         logArrayList("nameList", nameList);
         logArrayList("descList", descList);
         logArrayList("locNameList", locNameList);
         logArrayList("orgList", orgList);
         logArrayList("dateList", dateList);
         logImageArrayList("imageList", imageList);
-
-
-
     }
 
     private void logArrayList(String name, ArrayList<String> list) {
@@ -100,31 +97,29 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
     public myEventsOrgAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.myeventorg_cell, parent, false);
         return new myEventsOrgAdapter.ViewHolder(view);
-
-        /// need change layout
     }
 
     @Override
     public void onBindViewHolder(@NonNull myEventsOrgAdapter.ViewHolder holder, int position) {
-        holder.name.setText(nameList.get(position));
-        holder.date.setText(dateList.get(position));
-        holder.desc.setText(descList.get(position));
-        holder.organiser.setText(orgList.get(position));
-        holder.loc.setText(locNameList.get(position));
-        Log.d("temp tag", signUpList.get(position).toString());
-        holder.number.setText((signUpList.get(position)).toString());
+        if (position > 0 || position < nameList.size()) {
+            holder.name.setText(nameList.get(position));
+            holder.date.setText(dateList.get(position));
+            holder.desc.setText(descList.get(position));
+            holder.organiser.setText(orgList.get(position));
+            holder.loc.setText(locNameList.get(position));
+            holder.number.setText(String.valueOf(signUpList.get(position)));
 
-        Blob temp = imageList.get(position);
+            Blob temp = imageList.get(position);
 
-
-        // need change layout
-
-        if (temp != null) {
-            byte[] imageData;
-            imageData = temp.toBytes();
-            Glide.with(context)
-                    .load(imageData)
-                    .into(holder.image);
+            if (temp != null) {
+                byte[] imageData;
+                imageData = temp.toBytes();
+                Glide.with(context)
+                        .load(imageData)
+                        .into(holder.image);
+            }
+        } else {
+            Log.e("Adapter", "Invalid position: " + position);
         }
     }
 
@@ -138,7 +133,6 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
         ImageView image;
         Button closeSignUpButton, cancelEventButton;
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
 
         public ViewHolder(@NonNull View v) {
             super(v);
@@ -165,76 +159,87 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
                     cancelEvent();
                 }
             });
-            // need change layout
         }
 
         protected void closeSignUp() {
-
             Map<String, Object> signUp = new HashMap<>();
-            signUp.put(eventHelper.KEY_SIGNUPSTATUS,eventHelper.KEY_CLOSE);
-            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition())).update(signUp).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    Toast.makeText(context.getApplicationContext(),"Sign Up Closed",Toast.LENGTH_SHORT).show();
-                    db.collection(accountHelper.KEY_ORGANISERS).document(auth.getUid()).collection(accountHelper.KEY_MYEVENTS).document(nameList.get(getAdapterPosition())).update(signUp);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
+            signUp.put(eventHelper.KEY_SIGNUPSTATUS, eventHelper.KEY_CLOSE);
 
-                }
-            });
-
-
-
+            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition()))
+                    .update(signUp)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context.getApplicationContext(), "Sign Up Closed", Toast.LENGTH_SHORT).show();
+                            db.collection(accountHelper.KEY_ORGANISERS)
+                                    .document(auth.getUid())
+                                    .collection(accountHelper.KEY_MYEVENTS)
+                                    .document(nameList.get(getAdapterPosition()))
+                                    .update(signUp);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Handle the failure to close sign up
+                        }
+                    });
         }
 
         protected void cancelEvent() {
             Map<String, Object> signUp = new HashMap<>();
-            signUp.put(eventHelper.KEY_EVENTSTATUS,eventHelper.KEY_CANCELLED);
-            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition())).update(signUp).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    Toast.makeText(context.getApplicationContext(),"Sign Up Closed",Toast.LENGTH_SHORT).show();
-                    db.collection(accountHelper.KEY_ORGANISERS).document(auth.getUid()).collection(accountHelper.KEY_MYEVENTS).document(nameList.get(getAdapterPosition())).update(signUp);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
+            signUp.put(eventHelper.KEY_EVENTSTATUS, eventHelper.KEY_CANCELLED);
 
-                }
-            });
-
-
+            db.collection(eventHelper.KEY_EVENTS).document(nameList.get(getAdapterPosition()))
+                    .update(signUp)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context.getApplicationContext(), "Event Cancelled", Toast.LENGTH_SHORT).show();
+                            db.collection(accountHelper.KEY_ORGANISERS)
+                                    .document(auth.getUid())
+                                    .collection(accountHelper.KEY_MYEVENTS)
+                                    .document(nameList.get(getAdapterPosition()))
+                                    .update(signUp);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Handle the failure to cancel the event
+                        }
+                    });
         }
-
     }
-    public void deleteEvent(int position){
 
+    public void deleteEvent(int position) {
         FirebaseUser currentUser = auth.getCurrentUser();
         String uid = currentUser.getUid();
 
         // Remove the event document from the collection
-
-        db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position))
+        db.collection(eventHelper.KEY_EVENTS)
+                .document(nameList.get(position))
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(context.getApplicationContext(), "Event Deleted",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context.getApplicationContext(), "Event Deleted", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // Handle the failure to delete the event
-                        Toast.makeText(context.getApplicationContext(), "Event Delete Unsuccessful",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context.getApplicationContext(), "Event Delete Unsuccessful", Toast.LENGTH_SHORT).show();
                         Log.e("DeleteEvent", "Error deleting event", e);
                     }
                 });
-        CollectionReference collectionReference = db.collection(eventHelper.KEY_EVENTS).document(nameList.get(position)).collection(eventHelper.KEY_EVENTSIGNUP);
 
-// Delete all documents in the collection
+        CollectionReference collectionReference = db.collection(eventHelper.KEY_EVENTS)
+                .document(nameList.get(position))
+                .collection(eventHelper.KEY_EVENTSIGNUP);
+
+        // Delete all documents in the collection
         collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -247,7 +252,11 @@ public class myEventsOrgAdapter extends RecyclerView.Adapter<myEventsOrgAdapter.
                 }
             }
         });
-        db.collection(accountHelper.KEY_ORGANISERS).document(uid).collection(accountHelper.KEY_MYEVENTS).document(nameList.get(position)).delete();
 
+        db.collection(accountHelper.KEY_ORGANISERS)
+                .document(uid)
+                .collection(accountHelper.KEY_MYEVENTS)
+                .document(nameList.get(position))
+                .delete();
     }
 }
