@@ -19,11 +19,11 @@
             android:title="Organisation Directory"
             android:icon="@drawable/contacts"/>
         <item
-            android:icon="@drawable/heart"
             android:id="@+id/webNav"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:title="Organisation Directory"/>
+            android:icon="@drawable/heart"
+            android:title="Donate Here" />
 
     </group>
     <group
