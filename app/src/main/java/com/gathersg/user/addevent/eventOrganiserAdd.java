@@ -131,7 +131,7 @@ public class eventOrganiserAdd extends AppCompatActivity {
                         }
                         lat = Double.parseDouble(latitude.getText().toString());
                         lon = Double.parseDouble(longitude.getText().toString());
-                        setLocation.setText("Latitude: "+ lat.toString()+ "\n"+"Longitude: Suria with bubble");
+                        setLocation.setText("Latitude: "+ lat.toString()+ "\n"+"Longitude: " + lon.toString());
 
                         dialog.dismiss();
 

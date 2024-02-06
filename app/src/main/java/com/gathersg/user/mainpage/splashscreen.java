@@ -24,17 +24,17 @@ public class splashscreen extends AppCompatActivity {
         videoView = findViewById(R.id.splashimage);
 
 
-        String path = "android.resource://com.gathersg.user/" + R.raw.splashscreen2;
+        String path = "android.resource://com.gathersg.user/" + R.raw.splashscreenraw;
 
         Uri uri = Uri.parse(path);
 
         videoView.setVideoURI(uri);
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.splashmusic);
+        mediaPlayer = MediaPlayer.create(this, R.raw.splashscreenmusic);
         mediaPlayer.setLooping(false);
 
        videoView.start();
-       mediaPlayer.start();
+          mediaPlayer.start();
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -44,7 +44,7 @@ public class splashscreen extends AppCompatActivity {
                 finish();
             }
 
-        },4000);
+        },5000);
 
 
     }
