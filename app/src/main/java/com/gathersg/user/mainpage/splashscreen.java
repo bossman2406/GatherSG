@@ -24,7 +24,7 @@ public class splashscreen extends AppCompatActivity {
         videoView = findViewById(R.id.splashimage);
 
 
-        String path = "android.resource://com.gathersg.user/" + R.raw.screensaver;
+        String path = "android.resource://com.gathersg.user/" + R.raw.splashscreen2;
 
         Uri uri = Uri.parse(path);
 

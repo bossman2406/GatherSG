@@ -49,6 +49,7 @@ public class myPhotoAdd extends AppCompatActivity {
     FirebaseAuth auth;
     eventHelper helper;
     accountHelper account;
+    String uid;
     private EditText eventName, eventDesc, eventLocName, eventMaxPax,eventVIA;
     private String eventDate;
     private MaterialCardView dateCard, locCard;
@@ -58,7 +59,6 @@ public class myPhotoAdd extends AppCompatActivity {
     private Button eventPublishButton;
     private TextView viewPublishedEvents, eventPublishDate;
     private FirebaseFirestore db;
-    String uid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -110,9 +110,13 @@ public class organiserLogin extends Fragment {
                 dialog.show();
             }
         });
+        if (savedInstanceState == null){
+            return view;
+        }
+        else return null;
 
         // Inflate the layout for this fragment
-        return view;
+
     }
 
     public void organiserLogin(String email, String password) {

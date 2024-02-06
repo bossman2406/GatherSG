@@ -15,9 +15,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -238,18 +244,29 @@ public class weeklyCalendarVol extends Fragment implements CalendarAdapter.OnIte
                         new RecyclerItemClickListener.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
-                                myLatitude = gpsTracker.getLatitude();
-                                myLongitude = gpsTracker.getLongitude();
 
-                                Intent intent = new Intent(getContext(), MapActivity.class);
-                                intent.putExtra("LATITUDE", latList.get(position));
-                                intent.putExtra("LONGITUDE", lonList.get(position));
-                                intent.putExtra("NAME", nameList.get(position));
-                                intent.putExtra("MYLATITUDE", myLatitude);
-                                intent.putExtra("MYLONGITUDE",myLongitude);
+                                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // Permission is not granted, request it
+                                    int YOUR_PERMISSION_REQUEST_CODE =1008;
+                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, YOUR_PERMISSION_REQUEST_CODE);
+                                } else {
+                                    // Permission is already granted
+                                    // Perform the operation that requires this permission
+
+                                    gpsTracker = new GPSTracker(getContext());
+                                    myLatitude = gpsTracker.getLatitude();
+                                    myLongitude = gpsTracker.getLongitude();
+
+                                    Intent intent = new Intent(getContext(), MapActivity.class);
+                                    intent.putExtra("LATITUDE", latList.get(position));
+                                    intent.putExtra("LONGITUDE", lonList.get(position));
+                                    intent.putExtra("NAME", nameList.get(position));
+                                    intent.putExtra("MYLATITUDE", myLatitude);
+                                    intent.putExtra("MYLONGITUDE", myLongitude);
 
 
-                                startActivity(intent);
+                                    startActivity(intent);
+                                }
                             }
 
                             @Override

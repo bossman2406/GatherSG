@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gathersg.user.R;
 import com.gathersg.user.calendar.CalendarAdapter;
 import com.gathersg.user.calendar.CalendarUtils;
+import com.gathersg.user.map.GPSTracker;
 import com.gathersg.user.map.MapActivity;
 import com.gathersg.user.map.RecyclerItemClickListener;
 import com.gathersg.user.services.dataLinking;
@@ -270,10 +271,19 @@ public class weeklyCalendarOrg extends Fragment implements CalendarAdapter.OnIte
     }
 
     private void openMap(int position) {
+        GPSTracker gpsTracker = new GPSTracker(getContext());
+        double myLatitude;
+        myLatitude = gpsTracker.getLatitude();
+        double myLongitude = gpsTracker.getLongitude();
+
         Intent intent = new Intent(getContext(), MapActivity.class);
         intent.putExtra("LATITUDE", latList.get(position));
         intent.putExtra("LONGITUDE", lonList.get(position));
         intent.putExtra("NAME", nameList.get(position));
+        intent.putExtra("MYLATITUDE", myLatitude);
+        intent.putExtra("MYLONGITUDE", myLongitude);
+
+
         startActivity(intent);
     }
 

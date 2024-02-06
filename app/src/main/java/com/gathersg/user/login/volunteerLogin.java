@@ -117,8 +117,10 @@ public class volunteerLogin extends Fragment {
             }
         });
 
-        // Inflate the layout for this fragment
-        return view;
+        if (savedInstanceState == null){
+            return view;
+        }
+        else return null;
     }
 
     public void volunteerLogin() {
